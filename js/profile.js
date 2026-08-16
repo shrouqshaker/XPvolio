@@ -48,27 +48,7 @@ function renderUserDocuments() {
 
   let docs = getUserDocs(currentUser.email);
 
-  if (docs.length === 0) {
-    docs = [
-      {
-        id: "cv_" + Date.now(),
-        title: "Software Engineer Resume",
-        type: "CV",
-        updatedAt: new Date().toLocaleDateString(),
-        atsScore: 92
-      },
-      {
-        id: "port_" + (Date.now() + 1),
-        title: "Main Developer Portfolio",
-        type: "Portfolio",
-        updatedAt: new Date().toLocaleDateString(),
-        isPublished: true,
-        slug: (currentUser.name || "user").toLowerCase().replace(/\s+/g, '-')
-      }
-    ];
-    saveUserDocs(currentUser.email, docs);
-  }
-
+  // تحديث الإحصائيات (Stats)
   const cvs = docs.filter(d => d.type === "CV");
   const portfolios = docs.filter(d => d.type === "Portfolio");
 
@@ -88,6 +68,7 @@ function renderUserDocuments() {
     }
   }
 
+  // تصفية حسب التاب المختار
   let filteredDocs = docs;
   if (currentFilter !== "ALL") {
     filteredDocs = docs.filter(d => d.type === currentFilter);
@@ -98,9 +79,20 @@ function renderUserDocuments() {
 
   if (filteredDocs.length === 0) {
     container.innerHTML = `
-      <div class="col-12 text-center py-5 text-secondary">
-        <i class="fa-regular fa-folder-open fs-1 mb-3 text-muted"></i>
-        <p class="mb-0">No ${currentFilter === "ALL" ? "items" : currentFilter + "s"} found. Create one now!</p>
+      <div class="col-12 text-center py-5">
+        <div class="p-3 bg-light rounded-circle d-inline-flex mb-3">
+          <i class="fa-regular fa-folder-open fs-2 text-muted"></i>
+        </div>
+        <h3 class="h6 fw-bold text-dark mb-1">No ${currentFilter === "ALL" ? "resumes or portfolios" : currentFilter + "s"} yet</h3>
+        <p class="text-secondary small mb-3">You haven't created any documents yet. Start crafting your first one!</p>
+        <div class="d-flex justify-content-center gap-2">
+          <button onclick="promptCreateDoc('CV')" class="btn btn-sm btn-primary-custom px-3 rounded-2">
+            <i class="fa-solid fa-plus me-1"></i> Create Resume (CV)
+          </button>
+          <button onclick="promptCreateDoc('Portfolio')" class="btn btn-sm btn-outline-primary px-3 rounded-2">
+            <i class="fa-solid fa-plus me-1"></i> Create Portfolio
+          </button>
+        </div>
       </div>
     `;
     return;
@@ -173,10 +165,13 @@ window.promptCreateDoc = function(type) {
   const title = prompt(`Enter a title for your new ${type}:`, defaultTitle);
   if (!title || !title.trim()) return;
 
-  const docs = getUserDocs(currentUser.email);
+  const trimmedTitle = title.trim();
+  const docId = (type === "CV" ? "cv_" : "port_") + Date.now();
+
+  let docs = getUserDocs(currentUser.email) || [];
   const newDoc = {
-    id: (type === "CV" ? "cv_" : "port_") + Date.now(),
-    title: title.trim(),
+    id: docId,
+    title: trimmedTitle,
     type: type,
     updatedAt: new Date().toLocaleDateString(),
     atsScore: type === "CV" ? 88 : undefined,
@@ -185,10 +180,42 @@ window.promptCreateDoc = function(type) {
 
   docs.unshift(newDoc);
   saveUserDocs(currentUser.email, docs);
+
+  // حفظ الحالة المبدئية مباشرة بالاسم المختار
+  const storageKey = `xpvolio_state_${currentUser.email.toLowerCase().trim()}_${docId}`;
+  const initialState = {
+    docId: docId,
+    docTitle: trimmedTitle,
+    personalInfo: {
+      fullName: currentUser.name || "Your Name",
+      professionalTitle: "",
+      email: currentUser.email || "user@example.com",
+      phone: "",
+      address: "",
+      socialLinks: { linkedin: "", github: "", website: "", behance: "" }
+    },
+    summary: "",
+    experience: [],
+    education: [],
+    skills: [],
+    projects: [],
+    services: [],
+    certifications: [],
+    courses: [],
+    languages: [],
+    awards: [],
+    volunteer: [],
+    organizations: [],
+    regionalDetails: { enabled: false, dateOfBirth: "", nationality: "", maritalStatus: "", militaryStatus: "Not Applicable" },
+    references: { availableUponRequest: true },
+    customization: { primaryColor: "#004ac6", font: "Inter" }
+  };
+  localStorage.setItem(storageKey, JSON.stringify(initialState));
+
   renderUserDocuments();
 
   const targetView = type === "CV" ? "cv" : "portfolio";
-  window.location.href = `editor.html?view=${targetView}&docId=${newDoc.id}`;
+  window.location.href = `editor.html?view=${targetView}&docId=${docId}&title=${encodeURIComponent(trimmedTitle)}`;
 };
 
 window.previewPortfolio = function(docId) {
@@ -199,19 +226,38 @@ window.duplicateDocument = function(docId) {
   const currentUser = window.Auth.getCurrentUser();
   if (!currentUser) return;
 
-  const docs = getUserDocs(currentUser.email);
+  let docs = getUserDocs(currentUser.email) || [];
   const target = docs.find(d => d.id === docId);
   if (!target) return;
 
+  const newDocId = (target.type === "CV" ? "cv_" : "port_") + Date.now();
+  const duplicatedTitle = target.title + " (Copy)";
+
   const duplicated = {
     ...target,
-    id: (target.type === "CV" ? "cv_" : "port_") + Date.now(),
-    title: target.title + " (Copy)",
+    id: newDocId,
+    title: duplicatedTitle,
     updatedAt: new Date().toLocaleDateString()
   };
 
   docs.unshift(duplicated);
   saveUserDocs(currentUser.email, docs);
+
+  // تكرار بيانات الـ State أيضاً للمستند الجديد
+  const oldKey = `xpvolio_state_${currentUser.email.toLowerCase().trim()}_${docId}`;
+  const newKey = `xpvolio_state_${currentUser.email.toLowerCase().trim()}_${newDocId}`;
+  try {
+    const oldState = localStorage.getItem(oldKey);
+    if (oldState) {
+      const parsedState = JSON.parse(oldState);
+      parsedState.docId = newDocId;
+      parsedState.docTitle = duplicatedTitle;
+      localStorage.setItem(newKey, JSON.stringify(parsedState));
+    }
+  } catch (e) {
+    console.error("Duplicate state error:", e);
+  }
+
   renderUserDocuments();
 };
 
@@ -221,9 +267,14 @@ window.deleteDocument = function(docId) {
   const currentUser = window.Auth.getCurrentUser();
   if (!currentUser) return;
 
-  let docs = getUserDocs(currentUser.email);
+  let docs = getUserDocs(currentUser.email) || [];
   docs = docs.filter(d => d.id !== docId);
+  
   saveUserDocs(currentUser.email, docs);
+  
+  const storageKey = `xpvolio_state_${currentUser.email.toLowerCase().trim()}_${docId}`;
+  localStorage.removeItem(storageKey);
+
   renderUserDocuments();
 };
 

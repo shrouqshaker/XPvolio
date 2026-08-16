@@ -144,7 +144,7 @@
       const pass = document.getElementById("loginPassword").value;
       const res = window.Auth.login(email, pass);
       if (res.success) {
-        window.location.href = "editor.html";
+        window.location.href = "profile.html";
       } else {
         showAlert(res.message);
       }
@@ -157,7 +157,7 @@
       const pass = document.getElementById("regPassword").value;
       const res = window.Auth.register(name, email, pass);
       if (res.success) {
-        window.location.href = "editor.html";
+        window.location.href = "profile.html";
       } else {
         showAlert(res.message);
       }
@@ -172,11 +172,11 @@
         const res = window.Auth.login(email, "demo123");
         if (!res.success) { showAlert(res.message); return; }
       }
-      window.location.href = "editor.html";
+      window.location.href = "profile.html";
     }
 
     if (window.Auth && window.Auth.getCurrentUser()) {
-      window.location.replace("editor.html");
+      window.location.replace("profile.html");
     }
   </script>
 </body>
