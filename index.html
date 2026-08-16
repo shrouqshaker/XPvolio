@@ -14,19 +14,118 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
 
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      color: #0f172a;
+    :root {
+      --app-primary: #2563eb;
+      --primary-color: #004ac6;
+      --primary-hover: #2563eb;
+      --app-primary-hover: #1d4ed8;
+      --app-bg: #f8fafc;
+      --app-text: #0f172a;
+      --app-muted: #64748b;
+      --app-border: #e2e8f0;
+      --app-surface: #ffffff;
     }
 
-    .hero-section {
-      padding: 100px 0 80px 0;
-      background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+    body {
+      background-color: var(--app-bg);
+      color: var(--app-text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .btn-primary-custom {
+      background-color: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      padding: 0.625rem 1.5rem;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-primary-custom:hover {
+      background-color: var(--primary-hover);
+      color: #ffffff;
+    }
+
+    /* Badge */
+    .hero-badge {
+      background-color: #f1f5f9;
+      color: var(--app-primary);
+      border: 1px solid var(--app-border);
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* Buttons */
+    .btn-custom-primary {
+      background-color: var(--app-primary);
+      color: #fff;
+      border: 1px solid var(--app-primary);
+      transition: all 0.2s ease;
+    }
+
+    .btn-custom-primary:hover {
+      background-color: var(--app-primary-hover);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-custom-outline {
+      background-color: var(--app-surface);
+      color: var(--app-primary);
+      border: 1px solid var(--app-primary);
+      transition: all 0.2s ease;
+    }
+
+    .btn-custom-outline:hover {
+      background-color: #f1f5f9;
+      color: var(--app-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Image Wrapper & Animations */
+    .hero-card {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      background-color: #fff;
+      border: 1px solid var(--app-border);
+    }
+
+    @media (min-width: 768px) {
+      .hero-card {
+        aspect-ratio: 1 / 1;
+      }
+    }
+
+    .hero-card img {
+      transition: transform 0.7s ease-out;
+      opacity: 0.9;
+    }
+
+    .hero-card:hover img {
+      transform: scale(1.05);
+    }
+
+    /* Placeholder bars inside overlay */
+    .bar-muted {
+      background-color: #cbd5e1;
+    }
+
+    .bar-light {
+      background-color: #e2e8f0;
     }
 
     .feature-icon {
@@ -56,33 +155,63 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-menu navbar-nav ms-auto align-items-center gap-3">
-          <li class="nav-item"><a class="nav-link fw-medium text-dark" href="#about">About</a></li>
-          <li class="nav-item"><a class="nav-link fw-medium text-dark" href="#contact">Contact Us</a></li>
-          <li class="nav-item"><a class="btn btn-outline-primary px-3 rounded-pill" href="login.html">Sign In</a></li>
-          <li class="nav-item"><a class="btn btn-primary px-4 rounded-pill" href="editor.html">Get Started Free</a></li>
+          <li class="nav-item"><a class="nav-link fw-medium text-dark" href="#">Home</a></li>
+          <li class="nav-item"><a class="nav-link fw-medium text-dark" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link fw-medium text-dark" href="contact.html">Contact Us</a></li>
+          <li class="nav-item"><a class="btn btn-outline-primary px-3 rounded-3" href="login.html">Sign
+              In</a></li>
+          <li class="nav-item"><a class="btn btn-primary-custom fw-medium px-3 rounded-3 shadow-sm"
+              href="editor.html">Get Started
+              Free</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section class="hero-section text-center">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-9">
-          <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold mb-3 fs-6"> Single
-            Data Source • ATS Ready • Web Portfolio</span>
-          <h1 class="display-4 fw-extrabold text-dark mb-4">Build Your Professional CV & Portfolio in Minutes</h1>
-          <p class="lead text-secondary mb-5 px-lg-5">Input your experience once. XPvolio automatically generates an
-            ATS-friendly CV resume and a stunning live personal portfolio website.</p>
-          <div class="d-flex flex-column flex-sm-row justify-content-center align-items-center gap-3 mb-5">
-            <a href="editor.html" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow w-100 w-sm-auto">Get Started Free</a>
-            <a href="login.html" class="btn btn-outline-dark btn-lg px-5 py-3 rounded-pill fw-bold w-100 w-sm-auto">Sign In</a>
+  <main id="home" class="flex-grow-1">
+    <!-- Hero Section -->
+    <section class="py-5 py-md-5 overflow-hidden">
+      <div class="container py-lg-4">
+        <div class="row align-items-center g-5">
+
+          <!-- Left Content -->
+          <div class="col-12 col-md-7 text-start">
+            <span class="hero-badge badge rounded-pill px-3 py-2 mb-4 text-uppercase fw-semibold">
+              New: AI-Powered Portfolio Builder
+            </span>
+            <h1 class="display-5 fw-bold text-dark mb-3 lh-sm">
+              Build Your Professional CV &amp; Portfolio in Minutes
+            </h1>
+            <p class="lead text-secondary mb-4" style="color: var(--app-muted) !important;">
+              Craft ATS-friendly resumes and stunning online portfolios that stand out to recruiters. No design skills
+              required. Start landing your dream roles today.
+            </p>
+            <div class="d-flex flex-column flex-sm-row gap-3">
+                <a class="btn btn-custom-primary px-4 py-3 rounded-3 d-inline-flex align-items-center justify-content-center fw-medium" href="editor.html">Get Started
+                  Free
+                <span aria-hidden="true" class="material-symbols-outlined ms-2 fs-5">description</span>
+                </a>
+                <a class="btn btn-custom-outline px-4 py-3 rounded-3 d-inline-flex align-items-center justify-content-center fw-medium" href="editor.html">
+                Create My Portfolio
+                <span aria-hidden="true" class="material-symbols-outlined ms-2 fs-5">web</span>
+                </a>
+            </div>
           </div>
+
+          <!-- Right Graphic / Image -->
+          <div class="col-12 col-md-5">
+            <div class="hero-card rounded-4 shadow-sm p-3">
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgNLzxHKf0NYL5FIVVKYfj_GHjl46l5lTTdgBiYB7LMqYBXy3iUgrnE8xj0IZjm7ps4vk5GV8hyTaUmrm7Vwqrdk9JjRKC4U5prxCrwAv_cSiqVJeT1_u7P05MYxbBCnb54hdqhz5Te94caWjjPGK-ewFpvdXHda1IYlMNv4Yii7zeb_-w52FXWGczSW3fz0Qwm-OphbwrBct0zBLxRD8Hf3Df1HavoH_52ODIW_sTTewBy2ifhuE4"
+                alt="Professional Workspace" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" />
+            </div>
+          </div>
+
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
+
 
   <!-- About Section -->
   <section id="about" class="py-5 bg-white">
@@ -140,13 +269,44 @@
   </section>
 
   <!-- Footer -->
-  <footer class="bg-dark text-white py-4 border-top">
-    <div class="container text-center">
-      <p class="small text-secondary mb-0">© 2026 XPvolio. Designed for Developers & Professionals.</p>
+  <footer class="border-top py-4 mt-auto bg-white">
+    <div class="container-xl">
+      <div class="row g-4">
+        <div class="col-12 col-md-3">
+          <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary fs-4" href="index.html">
+            <i class="fa-solid fa-file-signature"></i> XPvolio
+          </a>
+          <p class="small text-secondary mb-0">© 2024 XPvolio. All rights reserved.</p>
+        </div>
+        <div class="col-4 col-md-3">
+          <h4 class="h6 fw-semibold mb-2">Product</h4>
+          <ul class="list-unstyled mb-0">
+            <li><a class="small text-secondary text-decoration-none" href="#">Platform</a></li>
+            <li><a class="small text-secondary text-decoration-none" href="#">Features</a></li>
+          </ul>
+        </div>
+        <div class="col-4 col-md-3">
+          <h4 class="h6 fw-semibold mb-2">Legal</h4>
+          <ul class="list-unstyled mb-0">
+            <li><a class="small text-secondary text-decoration-none" href="#">Terms</a></li>
+            <li><a class="small text-secondary text-decoration-none" href="#">Privacy</a></li>
+          </ul>
+        </div>
+        <div class="col-4 col-md-3">
+          <h4 class="h6 fw-semibold mb-2">Connect</h4>
+          <div class="d-flex gap-3">
+            <a class="text-secondary text-decoration-none" href="#"><span
+                class="material-symbols-outlined">language</span></a>
+            <a class="text-secondary text-decoration-none" href="#"><span
+                class="material-symbols-outlined">share</span></a>
+          </div>
+        </div>
+      </div>
     </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/auth.js"></script>
 </body>
 
 </html>

@@ -100,6 +100,47 @@ class AuthManager {
       window.location.href = "login.html";
     }
   }
+
+  updateNavbar() {
+    const currentUser = this.getCurrentUser();
+    const navList = document.querySelector(".navbar-nav");
+    if (!navList) return;
+
+    const signInBtn = navList.querySelector('a[href="login.html"]');
+    const getStartedBtn = navList.querySelector('a[href="editor.html"]');
+
+    if (currentUser) {
+      if (getStartedBtn) {
+        const getStartedLi = getStartedBtn.closest("li");
+        if (getStartedLi) {
+          getStartedLi.remove();
+        }
+      }
+
+      if (signInBtn) {
+        const parentLi = signInBtn.closest("li");
+        if (parentLi) {
+          parentLi.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+              <a href="profile.html" class="btn btn-outline-primary d-flex align-items-center gap-2 px-3 rounded-3 text-decoration-none shadow-sm" title="Go to Profile">
+                <i class="fa-solid fa-circle-user fs-5"></i>
+                <span class="fw-semibold small">${currentUser.name || 'Profile'}</span>
+              </a>
+              <button onclick="window.Auth.logout()" class="btn btn-sm btn-outline-danger rounded-3 px-2 py-2" title="Sign Out">
+                <i class="fa-solid fa-right-from-bracket"></i>
+              </button>
+            </div>
+          `;
+        }
+      }
+    }
+  }
 }
 
 window.Auth = new AuthManager();
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (window.Auth) {
+    window.Auth.updateNavbar();
+  }
+});
