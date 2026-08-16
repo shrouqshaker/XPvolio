@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login / Sign Up | XPvolio</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+      min-height: 100vh;
+    }
+
+    .auth-card {
+      max-width: 440px;
+      width: 100%;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 8px 32px rgba(37, 99, 235, 0.08);
+    }
+
+    @media (max-width: 480px) {
+      .auth-card {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        min-height: 100vh;
+      }
+
+      body {
+        align-items: flex-start !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="d-flex align-items-center justify-content-center py-5 px-3">
+
+  <div class="auth-card bg-white p-4 p-md-5">
+    <div class="text-center mb-4">
+      <a href="index.html"
+        class="d-inline-flex align-items-center gap-2 text-decoration-none fw-bold text-primary fs-3 mb-2">
+        <i class="fa-solid fa-file-signature"></i> XPvolio
+      </a>
+      <p class="text-secondary small mb-0">Access your saved CVs and Portfolio Websites</p>
+    </div>
+
+    <div id="authAlert" class="alert alert-danger d-none py-2 small mb-3" role="alert"></div>
+
+    <ul class="nav nav-pills nav-justified bg-light p-1 rounded-pill mb-4" id="authTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active rounded-pill fw-bold" id="login-tab" data-bs-toggle="tab" data-bs-target="#login"
+          type="button" role="tab">Sign In</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link rounded-pill fw-bold" id="register-tab" data-bs-toggle="tab" data-bs-target="#register"
+          type="button" role="tab">Register</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="authTabsContent">
+
+      <div class="tab-pane fade show active" id="login" role="tabpanel">
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="mb-3">
+            <label class="form-label text-secondary fw-semibold small text-uppercase">Email Address</label>
+            <input type="email" id="loginEmail" class="form-control form-control-lg bg-light border-0"
+              placeholder="alex@example.com" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-secondary fw-semibold small text-uppercase">Password</label>
+            <input type="password" id="loginPassword" class="form-control form-control-lg bg-light border-0"
+              placeholder="••••••••" required>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+              <label class="form-check-label small text-secondary" for="rememberMe">Remember me</label>
+            </div>
+            <a href="#" class="small text-primary text-decoration-none">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-3 py-2 mb-3">Sign In to
+            XPvolio</button>
+        </form>
+      </div>
+
+      <div class="tab-pane fade" id="register" role="tabpanel">
+        <form id="registerForm" onsubmit="handleRegister(event)">
+          <div class="mb-3">
+            <label class="form-label text-secondary fw-semibold small text-uppercase">Full Name</label>
+            <input type="text" id="regName" class="form-control form-control-lg bg-light border-0"
+              placeholder="Alex Rivera" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-secondary fw-semibold small text-uppercase">Email Address</label>
+            <input type="email" id="regEmail" class="form-control form-control-lg bg-light border-0"
+              placeholder="alex@example.com" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-secondary fw-semibold small text-uppercase">Password</label>
+            <input type="password" id="regPassword" class="form-control form-control-lg bg-light border-0"
+              placeholder="Create a password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-3 py-2 mb-3">Create Free
+            Account</button>
+        </form>
+      </div>
+
+    </div>
+
+    <div class="text-center mt-3">
+      <p class="text-muted small mb-3">or continue with demo account</p>
+      <div class="d-flex gap-2">
+        <button type="button" onclick="quickDemoLogin('Google User', 'google@xpvolio.com')"
+          class="btn btn-outline-secondary w-50 d-flex align-items-center justify-content-center gap-2 py-2 rounded-3">
+          <i class="fa-brands fa-google text-danger"></i> Google
+        </button>
+        <button type="button" onclick="quickDemoLogin('GitHub Dev', 'github@xpvolio.com')"
+          class="btn btn-outline-secondary w-50 d-flex align-items-center justify-content-center gap-2 py-2 rounded-3">
+          <i class="fa-brands fa-github text-dark"></i> GitHub
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    function showAlert(msg) {
+      const box = document.getElementById("authAlert");
+      box.textContent = msg;
+      box.classList.remove("d-none");
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const pass = document.getElementById("loginPassword").value;
+      const res = window.Auth.login(email, pass);
+      if (res.success) {
+        window.location.href = "editor.html";
+      } else {
+        showAlert(res.message);
+      }
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById("regName").value;
+      const email = document.getElementById("regEmail").value;
+      const pass = document.getElementById("regPassword").value;
+      const res = window.Auth.register(name, email, pass);
+      if (res.success) {
+        window.location.href = "editor.html";
+      } else {
+        showAlert(res.message);
+      }
+    }
+
+    function quickDemoLogin(name, email) {
+      window.Auth.users = window.Auth.loadUsers();
+      if (!window.Auth.users[email]) {
+        const res = window.Auth.register(name, email, "demo123");
+        if (!res.success) { showAlert(res.message); return; }
+      } else {
+        const res = window.Auth.login(email, "demo123");
+        if (!res.success) { showAlert(res.message); return; }
+      }
+      window.location.href = "editor.html";
+    }
+
+    if (window.Auth && window.Auth.getCurrentUser()) {
+      window.location.replace("editor.html");
+    }
+  </script>
+</body>
+
+</html>
