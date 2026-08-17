@@ -68,7 +68,6 @@ function renderUserDocuments() {
     }
   }
 
-  // تصفية حسب التاب المختار
   let filteredDocs = docs;
   if (currentFilter !== "ALL") {
     filteredDocs = docs.filter(d => d.type === currentFilter);
@@ -181,7 +180,6 @@ window.promptCreateDoc = function(type) {
   docs.unshift(newDoc);
   saveUserDocs(currentUser.email, docs);
 
-  // حفظ الحالة المبدئية مباشرة بالاسم المختار
   const storageKey = `xpvolio_state_${currentUser.email.toLowerCase().trim()}_${docId}`;
   const initialState = {
     docId: docId,
@@ -243,7 +241,6 @@ window.duplicateDocument = function(docId) {
   docs.unshift(duplicated);
   saveUserDocs(currentUser.email, docs);
 
-  // تكرار بيانات الـ State أيضاً للمستند الجديد
   const oldKey = `xpvolio_state_${currentUser.email.toLowerCase().trim()}_${docId}`;
   const newKey = `xpvolio_state_${currentUser.email.toLowerCase().trim()}_${newDocId}`;
   try {

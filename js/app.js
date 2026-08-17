@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
     userNameEl.textContent = currentUser.name || currentUser.email;
   }
 
-  // ضبط العنوان في خانة الـ input
   const docTitleInput = document.getElementById("docTitleInput");
   if (docTitleInput && window.CVState) {
     const state = window.CVState.getState();
