@@ -20,3 +20,17 @@ body {
 .backgroundLinks {
     background-color:  #E6E8EA;
 }
+.activeCircel {
+    width: 20px;
+    height: 20px;
+    background-color: blue;
+}
+.borderLeft {
+    width: 2px;
+    height: 100%;
+}
+.activeCircelNotActive {
+    width: 20px;
+    height: 20px;
+    background-color:#F3F5F7 ;
+}
