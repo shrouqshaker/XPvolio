@@ -34,3 +34,8 @@ body {
     height: 20px;
     background-color:#F3F5F7 ;
 }
+.backgroundTechnology {
+    background-color: #F1F5F9;
+    padding: 6px;
+    border-radius: 20%;
+}
