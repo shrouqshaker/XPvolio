@@ -7,6 +7,18 @@ document.addEventListener("DOMContentLoaded", () => {
     userNameEl.textContent = currentUser.name || currentUser.email;
   }
 
+  const docTitleInput = document.getElementById("docTitleInput");
+  if (docTitleInput && window.CVState) {
+    const state = window.CVState.getState();
+    if (state && state.docTitle) {
+      docTitleInput.value = state.docTitle;
+    }
+
+    docTitleInput.addEventListener("input", (e) => {
+      window.CVState.setState("docTitle", e.target.value);
+    });
+  }
+
   window.initAtsGauge();
   window.initCvPreview();
   window.initEditor();
@@ -22,8 +34,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const viewType = urlParams.get("view");
+
   const cvBtn = document.getElementById("cvViewBtn");
   const portfolioBtn = document.getElementById("portfolioViewBtn");
+
+  if (viewType === "portfolio" && portfolioBtn && cvBtn) {
+    portfolioBtn.classList.add("active");
+    cvBtn.classList.remove("active");
+  }
+
   if (cvBtn && portfolioBtn) {
     cvBtn.addEventListener("click", () => {
       cvBtn.classList.add("active");
@@ -38,18 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const publishBtn = document.getElementById("publishBtn");
   if (publishBtn) {
     publishBtn.addEventListener("click", () => {
-      alert(" Your CV is published and live!");
-    });
-  }
-
-  const docTitleInput = document.getElementById("docTitleInput");
-  if (docTitleInput) {
-    const initialState = window.CVState.getState();
-    if (initialState.docTitle) {
-      docTitleInput.value = initialState.docTitle;
-    }
-    docTitleInput.addEventListener("input", (e) => {
-      window.CVState.setState("docTitle", e.target.value);
+      alert("Your document is published and live!");
     });
   }
 });

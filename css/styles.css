@@ -1,13 +1,9 @@
-
-
-/* Global Reset & Base */
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: #0f172a;
   background-color: #f8fafc;
 }
 
-/* Header Adjustments */
 .top-bar {
   height: 64px;
 }
@@ -22,44 +18,42 @@ body {
   width: 210px;
 }
 
-/* High-Contrast Visible Pill Switcher (CV View / Portfolio View) */
 .view-switch-pill {
-  display: inline-flex !important;
-  align-items: center !important;
-  background-color: #e2e8f0 !important; /* Visible gray capsule container */
-  padding: 4px !important;
-  border-radius: 30px !important;
-  border: 1px solid #cbd5e1 !important;
-  gap: 4px !important;
+  display: inline-flex;
+  align-items: center;
+  background-color: #e2e8f0;
+  padding: 4px;
+  border-radius: 30px;
+  border: 1px solid #cbd5e1;
+  gap: 4px;
 }
 
 .view-btn {
-  border: none !important;
-  background-color: transparent !important;
-  color: #64748b !important;
-  font-size: 0.85rem !important;
-  font-weight: 600 !important;
-  padding: 6px 16px !important;
-  border-radius: 20px !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  transition: all 0.2s ease !important;
+  border: none;
+  background-color: transparent;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
 }
 
 .view-btn.active {
-  background-color: #ffffff !important; /* White active background */
-  color: #2563eb !important; /* Vibrant blue text */
-  font-weight: 700 !important;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12) !important;
+  background-color: #ffffff;
+  color: #2563eb;
+  font-weight: 700;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
 }
 
 .view-btn:hover:not(.active) {
-  color: #1e293b !important;
+  color: #1e293b;
 }
 
-/* Top Icon & Action Buttons */
 .top-icon-btn {
   width: 38px;
   height: 38px;
@@ -68,24 +62,23 @@ body {
 }
 
 .top-icon-btn:hover {
-  background-color: #e2e8f0 !important;
-  color: #2563eb !important;
+  background-color: #e2e8f0;
+  color: #2563eb;
 }
 
 .btn-publish {
-  background-color: #2563eb !important;
-  border-color: #2563eb !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3) !important;
+  background-color: #2563eb;
+  border-color: #2563eb;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
 }
 
 .btn-publish:hover {
-  background-color: #1d4ed8 !important;
-  border-color: #1d4ed8 !important;
-  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4) !important;
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4);
 }
 
-/* Sidebar Styling using Bootstrap nav */
 .sidebar-panel .nav-link {
   color: #64748b;
   border-radius: 6px;
@@ -108,7 +101,6 @@ body {
   text-align: center;
 }
 
-/* Form Controls & Inputs */
 .form-control, .form-select {
   background-color: #f1f5f9;
   border: 1px solid #e2e8f0;
@@ -132,7 +124,6 @@ body {
   letter-spacing: 0.04em;
 }
 
-/* Form Cards & Dynamic Items */
 .form-card, .item-card {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
@@ -163,7 +154,6 @@ body {
   background-color: #eff6ff;
 }
 
-/* ATS Gauge Card */
 .ats-card {
   z-index: 5;
 }
@@ -214,7 +204,6 @@ body {
 
 .paper-container {
   width: 100%;
-  max-width: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -224,7 +213,6 @@ body {
   width: 100%;
   max-width: 580px;
   min-height: 820px;
-  height: auto !important;
   color: #1f2937;
   font-size: 0.88rem;
   line-height: 1.55;
@@ -271,7 +259,7 @@ body {
 .cv-divider {
   border: none;
   border-top: 1.5px solid #0f172a;
-  margin: 20px 0 24px 0;
+  margin: 20px 0 24px;
 }
 
 .cv-section {
@@ -347,7 +335,6 @@ body {
   color: #1e293b;
 }
 
-/* Layout Height & Independent Scroll Panels for Editor */
 @media (min-width: 992px) {
   .app-container {
     height: 100vh;
@@ -362,23 +349,22 @@ body {
   .preview-panel {
     height: 100%;
     max-height: calc(100vh - 64px);
-    overflow-y: auto !important;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 }
 
 @media (max-width: 991.98px) {
   html, body, .app-container {
-    height: auto !important;
-    min-height: 100% !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
   .top-bar {
-    height: auto !important;
+    height: auto;
     min-height: 64px;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
+    padding: 10px 0;
     flex-wrap: wrap;
     gap: 10px;
   }
@@ -387,52 +373,51 @@ body {
   }
   .sidebar-panel {
     border-bottom: 1px solid #e2e8f0;
-    border-right: none !important;
-    max-height: 65px !important;
-    padding: 8px 16px !important;
+    border-right: none;
+    max-height: 65px;
+    padding: 8px 16px;
     position: sticky;
     top: 0;
     z-index: 100;
     background-color: #ffffff;
   }
   .sidebar-panel nav {
-    flex-direction: row !important;
+    flex-direction: row;
     overflow-x: auto;
     white-space: nowrap;
-    flex-wrap: nowrap !important;
+    flex-wrap: nowrap;
     padding-bottom: 4px;
   }
   .sidebar-panel .nav-link {
-    display: inline-flex !important;
+    display: inline-flex;
     white-space: nowrap;
-    padding: 6px 14px !important;
+    padding: 6px 14px;
   }
   main.row {
-    height: auto !important;
-    overflow: visible !important;
+    height: auto;
+    overflow: visible;
   }
   .editor-panel,
   .preview-panel {
-    height: auto !important;
-    max-height: none !important;
-    overflow-y: visible !important;
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
   }
 }
 
 @media (max-width: 576px) {
   .paper-sheet {
-    padding: 24px 16px !important;
-    font-size: 0.8rem !important;
+    padding: 24px 16px;
+    font-size: 0.8rem;
   }
   .cv-name {
-    font-size: 1.5rem !important;
+    font-size: 1.5rem;
   }
   .cv-section-title {
-    font-size: 0.85rem !important;
+    font-size: 0.85rem;
   }
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

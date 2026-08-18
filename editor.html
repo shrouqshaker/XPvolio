@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,19 +8,24 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="bg-light">
 
   <div class="app-container d-flex flex-column">
 
-    <header class="top-bar border-bottom bg-white px-3 px-md-4 d-flex align-items-center justify-content-between shadow-sm flex-wrap gap-2">
+    <header
+      class="top-bar border-bottom bg-white px-3 px-md-4 d-flex align-items-center justify-content-between shadow-sm flex-wrap gap-2">
 
       <div class="d-flex align-items-center gap-2 gap-md-3">
-        <a href="index.html" class="logo-icon d-flex align-items-center justify-content-center rounded bg-primary bg-opacity-10 text-primary p-2 text-decoration-none">
+        <a href="index.html"
+          class="logo-icon d-flex align-items-center justify-content-center rounded bg-primary bg-opacity-10 text-primary p-2 text-decoration-none">
           <i class="fa-solid fa-arrow-left fs-5"></i>
         </a>
         <div class="d-none d-sm-block">
@@ -30,7 +36,7 @@
 
       <div class="doc-title-container d-flex align-items-center px-3 py-1 rounded-pill border bg-light">
         <i class="fa-regular fa-file-lines text-secondary me-2"></i>
-        <input type="text" id="docTitleInput" class="doc-title-input border-0 bg-transparent fw-semibold text-dark" value="Software Engineer Resume...">
+        <input type="text" id="docTitleInput" class="doc-title-input border-0 bg-transparent fw-semibold text-dark">
       </div>
 
       <div class="d-flex align-items-center gap-2">
@@ -44,20 +50,25 @@
           </button>
         </div>
 
-        <button id="downloadPdfBtn" class="top-icon-btn rounded-circle border-0 bg-light p-2 text-dark" title="Download PDF">
+        <button id="downloadPdfBtn" class="top-icon-btn rounded-circle border-0 bg-light p-2 text-dark"
+          title="Download PDF">
           <i class="fa-solid fa-download fs-6"></i>
         </button>
 
-        <button id="publishBtn" class="btn btn-primary btn-publish px-3 px-md-4 py-2 fw-bold d-flex align-items-center gap-2 rounded-3">
+        <button id="publishBtn"
+          class="btn btn-primary btn-publish px-3 px-md-4 py-2 fw-bold d-flex align-items-center gap-2 rounded-3">
           <i class="fa-solid fa-arrow-up-from-bracket"></i> <span class="d-none d-sm-inline">Publish</span>
         </button>
 
         <div class="d-flex align-items-center gap-2">
-          <div class="d-none d-md-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-light border">
+          <a href="profile.html"
+            class="d-none d-md-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-light border text-decoration-none"
+            title="Go to Profile">
             <i class="fa-solid fa-circle-user text-primary fs-5"></i>
             <span id="userNameDisplay" class="fw-semibold small text-dark">User</span>
-          </div>
-          <button onclick="window.Auth.logout()" class="btn btn-sm btn-outline-danger rounded-pill px-2 px-md-3" title="Sign Out">
+          </a>
+          <button onclick="window.Auth.logout()" class="btn btn-sm btn-outline-danger rounded-pill px-2 px-md-3"
+            title="Sign Out">
             <i class="fa-solid fa-right-from-bracket"></i>
           </button>
         </div>
@@ -69,52 +80,66 @@
 
       <aside class="col-12 col-lg-2 col-xl-2 border-end bg-white p-3 overflow-y-auto sidebar-panel">
         <nav class="nav nav-pills flex-column gap-1">
-          <button class="nav-link text-start active d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="personalInfo">
+          <button class="nav-link text-start active d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="personalInfo">
             <i class="fa-regular fa-user nav-icon"></i><span>Personal Info</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="summary">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="summary">
             <i class="fa-regular fa-file-lines nav-icon"></i><span>Summary</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="experience">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="experience">
             <i class="fa-solid fa-briefcase nav-icon"></i><span>Experience</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="education">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="education">
             <i class="fa-solid fa-graduation-cap nav-icon"></i><span>Education</span>
           </button>
           <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="skills">
             <i class="fa-solid fa-wand-magic-sparkles nav-icon"></i><span>Skills</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="projects">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="projects">
             <i class="fa-solid fa-folder-open nav-icon"></i><span>Projects</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="services">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="services">
             <i class="fa-solid fa-concierge-bell nav-icon"></i><span>Services</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="certifications">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="certifications">
             <i class="fa-solid fa-certificate nav-icon"></i><span>Certifications</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="courses">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="courses">
             <i class="fa-solid fa-book-open nav-icon"></i><span>Courses</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="languages">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="languages">
             <i class="fa-solid fa-language nav-icon"></i><span>Languages</span>
           </button>
           <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="awards">
             <i class="fa-solid fa-trophy nav-icon"></i><span>Awards</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="volunteer">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="volunteer">
             <i class="fa-solid fa-hand-holding-heart nav-icon"></i><span>Volunteer</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="organizations">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="organizations">
             <i class="fa-solid fa-sitemap nav-icon"></i><span>Organizations</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="regionalDetails">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="regionalDetails">
             <i class="fa-solid fa-earth-americas nav-icon"></i><span>Regional Details</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="references">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="references">
             <i class="fa-solid fa-users nav-icon"></i><span>References</span>
           </button>
-          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium" data-section="customization">
+          <button class="nav-link text-start d-flex align-items-center gap-3 py-2 px-3 fw-medium"
+            data-section="customization">
             <i class="fa-solid fa-palette nav-icon"></i><span>Customization</span>
           </button>
         </nav>
@@ -128,19 +153,25 @@
         <div id="editorContent" class="editor-content"></div>
       </section>
 
-      <section class="col-12 col-md-6 col-lg-5 col-xl-5 bg-secondary bg-opacity-10 p-3 p-md-4 overflow-y-auto position-relative d-flex justify-content-center align-items-start preview-panel">
+      <section
+        class="col-12 col-md-6 col-lg-5 col-xl-5 bg-secondary bg-opacity-10 p-3 p-md-4 overflow-y-auto position-relative d-flex justify-content-center align-items-start preview-panel">
 
-        <div class="ats-card bg-white px-3 py-2 rounded-pill shadow-sm border position-absolute top-0 end-0 m-3 d-flex align-items-center gap-2" id="atsCard">
+        <div
+          class="ats-card bg-white px-3 py-2 rounded-pill shadow-sm border position-absolute top-0 end-0 m-3 d-flex align-items-center gap-2"
+          id="atsCard">
           <div class="ats-score-gauge position-relative">
             <svg class="ats-circle" viewBox="0 0 36 36">
-              <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path id="atsCircleProgress" class="circle-progress" stroke-dasharray="92, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="circle-bg"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path id="atsCircleProgress" class="circle-progress" stroke-dasharray="92, 100"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
             </svg>
             <span id="atsScoreValue" class="ats-score-num">92</span>
           </div>
           <div class="d-flex flex-column">
             <span class="ats-label text-muted fw-bold">ATS Score</span>
-            <span id="atsScoreStatus" class="ats-status text-success fw-semibold"><i class="fa-solid fa-circle-check"></i> Optimized</span>
+            <span id="atsScoreStatus" class="ats-status text-success fw-semibold"><i
+                class="fa-solid fa-circle-check"></i> Optimized</span>
           </div>
         </div>
 
@@ -161,4 +192,5 @@
   <script src="js/pdf.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>

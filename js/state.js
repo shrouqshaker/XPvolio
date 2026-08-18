@@ -1,159 +1,133 @@
-const DEFAULT_STORAGE_KEY = "xpvolio_master_cv_data";
-
-function getUserStorageKey() {
-  if (window.Auth && window.Auth.getCurrentUser()) {
-    const user = window.Auth.getCurrentUser();
-    return "xpvolio_cv_" + user.email.replace(/[^a-zA-Z0-9]/g, "_");
-  }
-  return DEFAULT_STORAGE_KEY;
-}
-
-function generateDefaultData(
-  fullName = "Alex Rivera",
-  email = "alex.rivera@example.com",
-) {
-  return {
-    docTitle: `${fullName}'s Master CV`,
-    lastUpdated: new Date().toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-    personalInfo: {
-      fullName: fullName,
-      professionalTitle: "Software Engineer",
-      email: email,
-      phone: "01234567890",
-      address: "San Francisco, CA, USA",
-      socialLinks: {
-        linkedin: `linkedin.com/in/${fullName.toLowerCase().replace(/\s+/g, "")}`,
-        github: `github.com/${fullName.toLowerCase().replace(/\s+/g, "")}`,
-        website: `${fullName.toLowerCase().replace(/\s+/g, "")}.dev`,
-        behance: "",
-      },
-    },
-    summary: `Results-driven Software Engineer with hands-on experience building scalable backend microservices and full-stack web applications. Dedicated to clean architecture and modern software practices.`,
-    experience: [
-      {
-        jobTitle: "Software Engineer",
-        company: "TechNexus Inc.",
-        location: "San Francisco, CA",
-        startDate: "Mar 2022",
-        endDate: "Present",
-        currentlyWorking: true,
-        description:
-          "Architected scalable RESTful microservices and frontend web components using modern JavaScript frameworks.",
-      },
-    ],
-    education: [
-      {
-        degree: "B.S. in Computer Science",
-        institution: "State University",
-        location: "CA, USA",
-        startDate: "Sep 2018",
-        graduationDate: "May 2022",
-        gpa: "3.8 / 4.0",
-        description: "Graduated with Honors.",
-      },
-    ],
-    skills: [
-      { name: "JavaScript / TypeScript", level: "Expert" },
-      { name: "React & HTML5/CSS3", level: "Advanced" },
-      { name: "Node.js & Express", level: "Advanced" },
-      { name: "SQL / PostgreSQL", level: "Intermediate" },
-    ],
-    projects: [
-      {
-        name: "Cloud Application Suite",
-        role: "Full Stack Developer",
-        startDate: "Jan 2023",
-        endDate: "Present",
-        description:
-          "An interactive web platform enabling real-time data visualization and document generation.",
-        technologies: ["JavaScript", "HTML5", "CSS3", "Node.js"],
-      },
-    ],
-    services: [
-      {
-        title: "Full-Stack Development",
-        description:
-          "Custom web applications, responsive interfaces, and scalable backend integrations.",
-      },
-    ],
-    certifications: [],
-    courses: [],
-    languages: [{ language: "English", proficiency: "Native / Professional" }],
-    awards: [],
-    volunteer: [],
-    organizations: [],
-    regionalDetails: {
-      enabled: false,
-      dateOfBirth: "",
-      nationality: "",
-      maritalStatus: "",
-      militaryStatus: "",
-    },
-    references: {
-      availableUponRequest: true,
-    },
-    customization: {
-      primaryColor: "#2563eb",
-      font: "Inter",
-    },
-  };
-}
-
-class CVStateManager {
+class StateManager {
   constructor() {
     this.listeners = [];
-    this.state = this.loadFromStorage();
+    this.currentDocId = this.getActiveDocId();
+    this.state = this.loadCurrentState();
   }
 
-  loadFromStorage() {
-    const key = getUserStorageKey();
+  getActiveDocId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get("docId") || "default_doc";
+  }
+
+  getStorageKey() {
+    const user = window.Auth ? window.Auth.getCurrentUser() : null;
+    const email = user ? user.email.toLowerCase().trim() : "guest";
+    return `xpvolio_state_${email}_${this.currentDocId}`;
+  }
+
+  getDocTitleFromProfile() {
+    const user = window.Auth ? window.Auth.getCurrentUser() : null;
+    if (!user) return null;
+
     try {
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        return JSON.parse(saved);
-      }
+      const listKey = `xpvolio_docs_${user.email.toLowerCase().trim()}`;
+      const docs = JSON.parse(localStorage.getItem(listKey)) || [];
+      const found = docs.find(d => d.id === this.currentDocId);
+      if (found && found.title) return found.title;
     } catch (e) {
-      console.warn("Could not load CVState from localStorage:", e);
+      console.error(e);
     }
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const passedTitle = urlParams.get("title");
+    return passedTitle ? decodeURIComponent(passedTitle) : null;
+  }
+
+  getDefaultState() {
     const user = window.Auth ? window.Auth.getCurrentUser() : null;
-    const initialData = generateDefaultData(
-      user ? user.name : "Alex Rivera",
-      user ? user.email : "alex.rivera@example.com",
-    );
-    this.saveToStorage(initialData);
-    return initialData;
+    const userName = user ? user.name : "Your Name";
+    const userEmail = user ? user.email : "user@example.com";
+    const resolvedTitle = this.getDocTitleFromProfile() || "Software Engineer Resume";
+
+    return {
+      docId: this.currentDocId,
+      docTitle: resolvedTitle,
+      personalInfo: {
+        fullName: userName,
+        professionalTitle: "",
+        email: userEmail,
+        phone: "",
+        address: "",
+        socialLinks: {
+          linkedin: "",
+          github: "",
+          website: "",
+          behance: ""
+        }
+      },
+      summary: "",
+      experience: [],
+      education: [],
+      skills: [],
+      projects: [],
+      services: [],
+      certifications: [],
+      courses: [],
+      languages: [],
+      awards: [],
+      volunteer: [],
+      organizations: [],
+      regionalDetails: {
+        enabled: false,
+        dateOfBirth: "",
+        nationality: "",
+        maritalStatus: "",
+        militaryStatus: "Not Applicable"
+      },
+      references: {
+        availableUponRequest: true
+      },
+      customization: {
+        primaryColor: "#004ac6",
+        font: "Inter"
+      }
+    };
   }
 
-  initUserCVData(name, email) {
-    const key = "xpvolio_cv_" + email.replace(/[^a-zA-Z0-9]/g, "_");
-    const data = generateDefaultData(name, email);
+  loadCurrentState() {
     try {
-      localStorage.setItem(key, JSON.stringify(data));
-    } catch (e) {}
-    this.state = data;
-    this.notify();
-  }
-
-  saveToStorage(data) {
-    const key = getUserStorageKey();
-    try {
-      data.lastUpdated = new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      localStorage.setItem(key, JSON.stringify(data));
+      const data = localStorage.getItem(this.getStorageKey());
+      if (data) {
+        const parsed = JSON.parse(data);
+        // نضمن مزامنة العنوان مع عنوان البروفايل
+        const profileTitle = this.getDocTitleFromProfile();
+        if (profileTitle) {
+          parsed.docTitle = profileTitle;
+        }
+        return parsed;
+      }
     } catch (e) {
-      console.error("Failed to save CVState to localStorage:", e);
+      console.error("Error loading state:", e);
+    }
+    return this.getDefaultState();
+  }
+
+  saveState() {
+    try {
+      localStorage.setItem(this.getStorageKey(), JSON.stringify(this.state));
+      this.syncWithProfileList();
+    } catch (e) {
+      console.error("Error saving state:", e);
+    }
+  }
+
+  syncWithProfileList() {
+    const user = window.Auth ? window.Auth.getCurrentUser() : null;
+    if (!user) return;
+
+    const listKey = `xpvolio_docs_${user.email.toLowerCase().trim()}`;
+    try {
+      let docs = JSON.parse(localStorage.getItem(listKey)) || [];
+      const index = docs.findIndex(d => d.id === this.currentDocId);
+      if (index !== -1) {
+        docs[index].title = this.state.docTitle || docs[index].title;
+        docs[index].updatedAt = new Date().toLocaleDateString();
+        docs[index].atsScore = this.calculateAtsScore();
+        localStorage.setItem(listKey, JSON.stringify(docs));
+      }
+    } catch (e) {
+      console.error("Sync error:", e);
     }
   }
 
@@ -163,103 +137,43 @@ class CVStateManager {
 
   setState(path, value) {
     const keys = path.split(".");
-    let target = this.state;
+    let current = this.state;
 
     for (let i = 0; i < keys.length - 1; i++) {
-      if (!target[keys[i]]) target[keys[i]] = {};
-      target = target[keys[i]];
+      if (!current[keys[i]]) current[keys[i]] = {};
+      current = current[keys[i]];
     }
 
-    target[keys[keys.length - 1]] = value;
-    this.saveToStorage(this.state);
+    current[keys[keys.length - 1]] = value;
+    this.saveState();
     this.notify();
   }
 
-  updateState(mutatorFn) {
-    mutatorFn(this.state);
-    this.saveToStorage(this.state);
-    this.notify();
-  }
-
-  updateArrayItem(arrayName, index, field, value) {
-    if (!this.state[arrayName]) this.state[arrayName] = [];
-    if (this.state[arrayName][index]) {
-      this.state[arrayName][index][field] = value;
-      this.saveToStorage(this.state);
-      this.notify();
-    }
-  }
-
-  addItem(arrayName, item) {
-    if (!this.state[arrayName]) this.state[arrayName] = [];
-    this.state[arrayName].push(item);
-    this.saveToStorage(this.state);
-    this.notify();
-  }
-
-  removeItem(arrayName, index) {
-    if (this.state[arrayName] && this.state[arrayName][index] !== undefined) {
-      this.state[arrayName].splice(index, 1);
-      this.saveToStorage(this.state);
-      this.notify();
-    }
-  }
-
-  resetToDefault() {
-    const user = window.Auth ? window.Auth.getCurrentUser() : null;
-    this.state = generateDefaultData(
-      user ? user.name : "Alex Rivera",
-      user ? user.email : "alex.rivera@example.com",
-    );
-    this.saveToStorage(this.state);
+  updateState(fn) {
+    fn(this.state);
+    this.saveState();
     this.notify();
   }
 
   subscribe(listener) {
     this.listeners.push(listener);
-    return () => {
-      this.listeners = this.listeners.filter((l) => l !== listener);
-    };
   }
 
   notify() {
-    this.listeners.forEach((listener) => listener(this.state));
+    this.listeners.forEach(fn => fn(this.state));
   }
 
   calculateAtsScore() {
-    let score = 0;
-    const s = this.state;
-
-    if (s.personalInfo?.fullName) score += 5;
-    if (s.personalInfo?.email) score += 5;
-    if (s.personalInfo?.phone) score += 5;
-    if (s.personalInfo?.address) score += 5;
-    if (s.personalInfo?.socialLinks?.linkedin) score += 5;
-
-    if (s.summary && s.summary.length > 50) score += 15;
-    else if (s.summary) score += 5;
-
-    if (s.experience && s.experience.length > 0) {
-      score += 15;
-      if (
-        s.experience[0].description &&
-        s.experience[0].description.length > 30
-      )
-        score += 10;
-    }
-
-    if (s.education && s.education.length > 0) score += 15;
-    if (s.skills && s.skills.length >= 3) score += 10;
-    else if (s.skills && s.skills.length > 0) score += 5;
-
-    if (
-      (s.projects && s.projects.length > 0) ||
-      (s.certifications && s.certifications.length > 0)
-    )
-      score += 10;
-
-    return Math.min(100, score);
+    let score = 30;
+    const p = this.state.personalInfo || {};
+    if (p.fullName && p.fullName.trim()) score += 10;
+    if (p.email && p.email.trim()) score += 10;
+    if (p.phone && p.phone.trim()) score += 10;
+    if (this.state.summary && this.state.summary.length > 30) score += 15;
+    if (this.state.experience && this.state.experience.length > 0) score += 15;
+    if (this.state.education && this.state.education.length > 0) score += 10;
+    return Math.min(score, 100);
   }
 }
 
-window.CVState = new CVStateManager();
+window.CVState = new StateManager();
