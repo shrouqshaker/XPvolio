@@ -1,65 +1,131 @@
-document.addEventListener("DOMContentLoaded", () => {
+
+document.addEventListener("DOMContentLoaded", function() {
   window.Auth.requireAuth();
 
-  const currentUser = window.Auth.getCurrentUser();
-  const userNameEl = document.getElementById("userNameDisplay");
-  if (userNameEl && currentUser) {
-    userNameEl.textContent = currentUser.name || currentUser.email;
+  /* ── User & Guest Header Display ────────────────────────────────────────── */
+  var currentUser = window.Auth.getCurrentUser();
+  var userNameEl  = document.getElementById("userNameDisplay");
+  var userPill    = document.getElementById("userProfilePill");
+  var signOutBtn  = document.getElementById("signOutBtn");
+
+  if (currentUser) {
+    if (userNameEl) userNameEl.textContent = currentUser.name || currentUser.email;
+  } else {
+    /* Guest User Mode */
+    if (userNameEl) userNameEl.textContent = "Guest Mode";
+    if (userPill) {
+      userPill.href  = "login.html";
+      userPill.title = "Sign In to Save Account to Dashboard";
+    }
+    if (signOutBtn) {
+      signOutBtn.title = "Sign In";
+      signOutBtn.className = "btn btn-sm btn-outline-primary rounded-pill px-2 px-md-3";
+      signOutBtn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket me-1"></i><span class="d-none d-lg-inline">Sign In</span>';
+      signOutBtn.onclick = function() { window.location.href = "login.html"; };
+    }
   }
 
-  const docTitleInput = document.getElementById("docTitleInput");
+  /* ── Doc title input ─────────────────────────────────────────────────── */
+  var docTitleInput = document.getElementById("docTitleInput");
   if (docTitleInput && window.CVState) {
-    const state = window.CVState.getState();
-    if (state && state.docTitle) {
-      docTitleInput.value = state.docTitle;
-    }
+    var state = window.CVState.getState();
+    docTitleInput.value = state.docTitle || "";
 
-    docTitleInput.addEventListener("input", (e) => {
+    docTitleInput.addEventListener("input", function(e) {
       window.CVState.setState("docTitle", e.target.value);
     });
   }
 
+  /* ── Init all modules ────────────────────────────────────────────────── */
   window.initAtsGauge();
   window.initCvPreview();
   window.initEditor();
   window.initPdfExport();
 
-  const navItems = document.querySelectorAll(".sidebar-panel .nav-link");
-  navItems.forEach((item) => {
-    item.addEventListener("click", () => {
-      navItems.forEach((n) => n.classList.remove("active"));
-      item.classList.add("active");
-      const sectionKey = item.getAttribute("data-section");
-      renderEditorSection(sectionKey);
-    });
-  });
+  /* ── Sidebar navigation ──────────────────────────────────────────────── */
+  var navItems = document.querySelectorAll(".sidebar-panel .nav-link");
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const viewType = urlParams.get("view");
-
-  const cvBtn = document.getElementById("cvViewBtn");
-  const portfolioBtn = document.getElementById("portfolioViewBtn");
-
-  if (viewType === "portfolio" && portfolioBtn && cvBtn) {
-    portfolioBtn.classList.add("active");
-    cvBtn.classList.remove("active");
+  for (var i = 0; i < navItems.length; i++) {
+    (function(item) {
+      item.addEventListener("click", function() {
+        for (var j = 0; j < navItems.length; j++) {
+          navItems[j].classList.remove("active");
+        }
+        item.classList.add("active");
+        renderEditorSection(item.getAttribute("data-section"));
+      });
+    })(navItems[i]);
   }
 
-  if (cvBtn && portfolioBtn) {
-    cvBtn.addEventListener("click", () => {
-      cvBtn.classList.add("active");
-      portfolioBtn.classList.remove("active");
-    });
-    portfolioBtn.addEventListener("click", () => {
-      portfolioBtn.classList.add("active");
-      cvBtn.classList.remove("active");
+  /* ── CV View vs. Portfolio View Switcher ──────────────────────────────── */
+  function switchPreviewView(viewName) {
+    var cvBtn        = document.getElementById("cvViewBtn");
+    var portfolioBtn = document.getElementById("portfolioViewBtn");
+    var cvWrapper    = document.getElementById("cvPreviewWrapper");
+    var portWrapper  = document.getElementById("portfolioPreviewWrapper");
+    var downloadBtn  = document.getElementById("downloadPdfBtn");
+
+    var activeDocId = window.CVState ? window.CVState.getActiveDocId() : "default_doc";
+
+    if (viewName === "portfolio") {
+      if (portfolioBtn) portfolioBtn.classList.add("active");
+      if (cvBtn)        cvBtn.classList.remove("active");
+      if (cvWrapper)    cvWrapper.classList.add("d-none");
+      if (portWrapper)  portWrapper.classList.remove("d-none");
+      if (downloadBtn)  downloadBtn.classList.add("d-none");
+
+      if (typeof renderPortfolio === "function") {
+        renderPortfolio();
+      }
+
+      var fullPortLink = document.getElementById("openFullPortfolioBtn");
+      if (fullPortLink) {
+        fullPortLink.href = "portfolio.html?docId=" + encodeURIComponent(activeDocId);
+      }
+    } else {
+      if (cvBtn)        cvBtn.classList.add("active");
+      if (portfolioBtn) portfolioBtn.classList.remove("active");
+      if (cvWrapper)    cvWrapper.classList.remove("d-none");
+      if (portWrapper)  portWrapper.classList.add("d-none");
+      if (downloadBtn)  downloadBtn.classList.remove("d-none");
+
+      var fullCvLink = document.getElementById("openFullCvBtn");
+      if (fullCvLink) {
+        fullCvLink.href = "cv.html?docId=" + encodeURIComponent(activeDocId);
+      }
+    }
+  }
+
+  var cvBtn        = document.getElementById("cvViewBtn");
+  var portfolioBtn = document.getElementById("portfolioViewBtn");
+
+  if (cvBtn) {
+    cvBtn.addEventListener("click", function() {
+      switchPreviewView("cv");
     });
   }
 
-  const publishBtn = document.getElementById("publishBtn");
+  if (portfolioBtn) {
+    portfolioBtn.addEventListener("click", function() {
+      switchPreviewView("portfolio");
+    });
+  }
+
+  /* Check URL view parameter on load */
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("view") === "portfolio") {
+    switchPreviewView("portfolio");
+  } else {
+    switchPreviewView("cv");
+  }
+
+  /* ── Publish button ──────────────────────────────────────────────────── */
+  var publishBtn = document.getElementById("publishBtn");
   if (publishBtn) {
-    publishBtn.addEventListener("click", () => {
-      alert("Your document is published and live!");
+    publishBtn.addEventListener("click", function() {
+      var activeDocId = window.CVState ? window.CVState.getActiveDocId() : "default_doc";
+      alert("🎉 Your CV & Portfolio are published and live!");
+      window.open("portfolio.html?docId=" + encodeURIComponent(activeDocId), "_blank");
     });
   }
 });

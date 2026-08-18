@@ -1,224 +1,268 @@
+/* ==========================================================================
+   preview.js — Live CV paper rendering from CVState
+   ========================================================================== */
+
+/* ── Escape helper ────────────────────────────────────────────────────────── */
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g,  "&amp;")
+    .replace(/</g,  "&lt;")
+    .replace(/>/g,  "&gt;")
+    .replace(/"/g,  "&quot;");
+}
+
+/* ── Date formatting ──────────────────────────────────────────────────────── */
+
+function formatDates(start, end, isCurrent) {
+  if (!start && !end) return "";
+  if (isCurrent)      return (start || "") + " – Present";
+  if (start && end)   return start + " – " + end;
+  return start || end || "";
+}
+
+/* ── Section builder helpers ──────────────────────────────────────────────── */
+
+function cvSection(title, bodyHtml) {
+  return (
+    '<div class="cv-section">' +
+      '<h3 class="cv-section-title">' + title + '</h3>' +
+      bodyHtml +
+    '</div>'
+  );
+}
+
+function cvItemRow(leftHtml, dateStr, metaHtml, descHtml) {
+  return (
+    '<div class="cv-item">' +
+      '<div class="cv-item-header">' +
+        '<div>' + leftHtml + '</div>' +
+        (dateStr ? '<span class="cv-item-date">' + escapeHtml(dateStr) + '</span>' : '') +
+      '</div>' +
+      (metaHtml ? '<div class="cv-item-meta">' + metaHtml + '</div>' : '') +
+      (descHtml ? '<div class="cv-item-desc">' + descHtml + '</div>' : '') +
+    '</div>'
+  );
+}
+
+function skillTagList(items) {
+  var tags = items.map(function(t) {
+    return '<span class="cv-skill-tag">' + escapeHtml(t) + '</span>';
+  });
+  return '<div class="cv-skills-tags">' + tags.join("") + '</div>';
+}
+
+/* ── Main render ──────────────────────────────────────────────────────────── */
+
 function renderCvPreview(state) {
-  const paper = document.getElementById("cvPaper");
+  var paper = document.getElementById("cvPaper");
   if (!paper) return;
 
-  const p = state.personalInfo || {};
-  const links = p.socialLinks || {};
+  var p     = state.personalInfo || {};
+  var links = p.socialLinks     || {};
 
-  const contactItems = [];
-  if (p.address || p.city || p.country) {
-    contactItems.push(escapeHtml(p.address || `${p.city || ''}, ${p.country || ''}`));
-  }
-  if (p.email) contactItems.push(escapeHtml(p.email));
-  if (p.phone) contactItems.push(escapeHtml(p.phone));
-  if (links.linkedin) contactItems.push(escapeHtml(links.linkedin));
-  if (links.github) contactItems.push(escapeHtml(links.github));
-  if (links.website) contactItems.push(escapeHtml(links.website));
+  /* Build contact line */
+  var contactParts = [];
+  if (p.address)       contactParts.push(escapeHtml(p.address));
+  if (p.email)         contactParts.push(escapeHtml(p.email));
+  if (p.phone)         contactParts.push(escapeHtml(p.phone));
+  if (links.linkedin)  contactParts.push(escapeHtml(links.linkedin));
+  if (links.github)    contactParts.push(escapeHtml(links.github));
+  if (links.website)   contactParts.push(escapeHtml(links.website));
+  if (links.behance)   contactParts.push(escapeHtml(links.behance));
 
-  let html = `
-    <div class="cv-header">
-      <h1 class="cv-name">${escapeHtml(p.fullName || 'ALEX RIVERA')}</h1>
-      <div class="cv-contact-line">
-        ${contactItems.map(item => `<span class="cv-contact-item">${item}</span>`).join(' <span class="cv-contact-sep">|</span> ')}
-      </div>
-    </div>
-    <hr class="cv-divider">
-  `;
+  var contactHtml = contactParts.map(function(item) {
+    return '<span class="cv-contact-item">' + item + '</span>';
+  }).join(' <span class="cv-contact-sep">|</span> ');
 
+  var html = (
+    '<div class="cv-header">' +
+      '<h1 class="cv-name">' + escapeHtml(p.fullName || "YOUR NAME") + '</h1>' +
+      (p.professionalTitle ? '<div class="cv-professional-title">' + escapeHtml(p.professionalTitle) + '</div>' : '') +
+      '<div class="cv-contact-line">' + contactHtml + '</div>' +
+    '</div>' +
+    '<hr class="cv-divider">'
+  );
+
+  /* Summary */
   if (state.summary && state.summary.trim()) {
-    html += `
-      <div class="cv-section">
-        <h3 class="cv-section-title">PROFESSIONAL SUMMARY</h3>
-        <p class="cv-summary-text">${escapeHtml(state.summary)}</p>
-      </div>
-    `;
+    html += cvSection("PROFESSIONAL SUMMARY", '<p class="cv-summary-text">' + escapeHtml(state.summary) + '</p>');
   }
 
-  if (state.experience && state.experience.length > 0) {
-    html += `
-      <div class="cv-section">
-        <h3 class="cv-section-title">PROFESSIONAL EXPERIENCE</h3>
-        ${state.experience.map(exp => `
-          <div class="cv-item">
-            <div class="cv-item-header">
-              <div>
-                <span class="cv-item-role">${escapeHtml(exp.jobTitle || '')}</span>
-                ${exp.company ? `<span class="cv-item-org">, ${escapeHtml(exp.company)}</span>` : ''}
-                ${exp.location ? `<span class="cv-item-org"> — ${escapeHtml(exp.location)}</span>` : ''}
-              </div>
-              <span class="cv-item-date">${formatDates(exp.startDate, exp.endDate, exp.currentlyWorking)}</span>
-            </div>
-            ${exp.description ? `<div class="cv-item-desc">${escapeHtml(exp.description)}</div>` : ''}
-            ${exp.responsibilities && exp.responsibilities.length ? `
-              <ul style="margin-top:6px; padding-left:20px; font-size:0.85rem; color:#334155;">
-                ${exp.responsibilities.map(r => `<li>${escapeHtml(r)}</li>`).join('')}
-              </ul>
-            ` : ''}
-          </div>
-        `).join('')}
-      </div>
-    `;
+  /* Experience */
+  if (state.experience && state.experience.length) {
+    var expHtml = "";
+    for (var i = 0; i < state.experience.length; i++) {
+      var exp = state.experience[i];
+      var leftHtml = '<span class="cv-item-role">' + escapeHtml(exp.jobTitle || "") + '</span>' +
+        (exp.company  ? '<span class="cv-item-org">, '   + escapeHtml(exp.company)  + '</span>' : '') +
+        (exp.location ? '<span class="cv-item-org"> — ' + escapeHtml(exp.location) + '</span>' : '');
+      expHtml += cvItemRow(leftHtml, formatDates(exp.startDate, exp.endDate, exp.currentlyWorking), "", exp.description ? escapeHtml(exp.description) : "");
+    }
+    html += cvSection("PROFESSIONAL EXPERIENCE", expHtml);
   }
 
-  if (state.education && state.education.length > 0) {
-    html += `
-      <div class="cv-section">
-        <h3 class="cv-section-title">EDUCATION</h3>
-        ${state.education.map(edu => `
-          <div class="cv-item">
-            <div class="cv-item-header">
-              <div>
-                <span class="cv-item-role">${escapeHtml(edu.degree || '')}</span>
-                ${edu.institution ? `<span class="cv-item-org"> — ${escapeHtml(edu.institution)}</span>` : ''}
-              </div>
-              <span class="cv-item-date">${formatDates(edu.startDate, edu.graduationDate, edu.currentlyStudying)}</span>
-            </div>
-            ${edu.gpa ? `<div style="font-size:0.82rem; color:#64748b; margin-top:2px;">GPA: ${escapeHtml(edu.gpa)}</div>` : ''}
-            ${edu.description ? `<div class="cv-item-desc">${escapeHtml(edu.description)}</div>` : ''}
-          </div>
-        `).join('')}
-      </div>
-    `;
+  /* Education */
+  if (state.education && state.education.length) {
+    var eduHtml = "";
+    for (var i = 0; i < state.education.length; i++) {
+      var edu = state.education[i];
+      var leftHtml = '<span class="cv-item-role">' + escapeHtml(edu.degree || "") + '</span>' +
+        (edu.institution ? '<span class="cv-item-org"> — ' + escapeHtml(edu.institution) + '</span>' : '');
+      eduHtml += cvItemRow(leftHtml, formatDates(edu.startDate, edu.graduationDate), edu.gpa ? "GPA: " + escapeHtml(edu.gpa) : "", edu.description ? escapeHtml(edu.description) : "");
+    }
+    html += cvSection("EDUCATION", eduHtml);
   }
 
-  if (state.skills && state.skills.length > 0) {
-    html += `
-      <div class="cv-section">
-        <h3 class="cv-section-title">SKILLS & EXPERTISE</h3>
-        <div class="cv-skills-tags">
-          ${state.skills.map(sk => `
-            <span class="cv-skill-tag">${escapeHtml(sk.name)}${sk.level ? ` (${sk.level})` : ''}</span>
-          `).join('')}
-        </div>
-      </div>
-    `;
+  /* Skills */
+  if (state.skills && state.skills.length) {
+    var tags = state.skills.map(function(sk) {
+      return escapeHtml(sk.name) + (sk.level ? " (" + sk.level + ")" : "");
+    });
+    html += cvSection("SKILLS & EXPERTISE", skillTagList(tags));
   }
 
-  if (state.projects && state.projects.length > 0) {
-    html += `
-      <div class="cv-section">
-        <h3 class="cv-section-title">KEY PROJECTS</h3>
-        ${state.projects.map(proj => `
-          <div class="cv-item">
-            <div class="cv-item-header">
-              <div>
-                <span class="cv-item-role">${escapeHtml(proj.name)}</span>
-                ${proj.role ? `<span class="cv-item-org"> (${escapeHtml(proj.role)})</span>` : ''}
-              </div>
-              <span class="cv-item-date">${formatDates(proj.startDate, proj.endDate)}</span>
-            </div>
-            ${proj.description ? `<div class="cv-item-desc">${escapeHtml(proj.description)}</div>` : ''}
-            ${proj.technologies && proj.technologies.length ? `
-              <div style="font-size:0.8rem; color:#64748b; margin-top:3px;"><strong>Tech:</strong> ${proj.technologies.map(t => escapeHtml(t)).join(', ')}</div>
-            ` : ''}
-          </div>
-        `).join('')}
-      </div>
-    `;
+  /* Projects */
+  if (state.projects && state.projects.length) {
+    var projHtml = "";
+    for (var i = 0; i < state.projects.length; i++) {
+      var proj = state.projects[i];
+      var leftHtml = '<span class="cv-item-role">' + escapeHtml(proj.name) + '</span>' +
+        (proj.role ? '<span class="cv-item-org"> (' + escapeHtml(proj.role) + ')</span>' : '');
+      
+      var techList = Array.isArray(proj.technologies) ? proj.technologies : (proj.technologies ? String(proj.technologies).split(",") : []);
+      var techLine = techList.length
+        ? '<strong>Tech:</strong> ' + techList.map(escapeHtml).join(", ")
+        : "";
+      
+      var descPart = (proj.description ? escapeHtml(proj.description) : "") + 
+        (techLine ? '<div style="font-size:0.8rem;color:#64748b;margin-top:3px;">' + techLine + '</div>' : "");
+
+      projHtml += cvItemRow(leftHtml, formatDates(proj.startDate, proj.endDate), "", descPart);
+    }
+    html += cvSection("KEY PROJECTS", projHtml);
   }
 
-  if (state.services && state.services.length > 0) {
-    html += `
-      <div class="cv-section">
-        <h3 class="cv-section-title">SERVICES OFFERED</h3>
-        ${state.services.map(srv => `
-          <div class="cv-item">
-            <span class="cv-item-role">${escapeHtml(srv.title)}</span>
-            ${srv.description ? `<div class="cv-item-desc">${escapeHtml(srv.description)}</div>` : ''}
-          </div>
-        `).join('')}
-      </div>
-    `;
+  /* Services */
+  if (state.services && state.services.length) {
+    var srvHtml = "";
+    for (var i = 0; i < state.services.length; i++) {
+      var srv = state.services[i];
+      srvHtml += cvItemRow('<span class="cv-item-role">' + escapeHtml(srv.title) + '</span>', "", "", escapeHtml(srv.description));
+    }
+    html += cvSection("SERVICES OFFERED", srvHtml);
   }
 
-  if (state.certifications && state.certifications.length > 0) {
-    html += `
-      <div class="cv-section">
-        <h3 class="cv-section-title">CERTIFICATIONS</h3>
-        ${state.certifications.map(cert => `
-          <div class="cv-item">
-            <div class="cv-item-header">
-              <span class="cv-item-role">${escapeHtml(cert.name)} - ${escapeHtml(cert.organization)}</span>
-              <span class="cv-item-date">${cert.issueDate || ''}</span>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
+  /* Certifications */
+  if (state.certifications && state.certifications.length) {
+    var certHtml = "";
+    for (var i = 0; i < state.certifications.length; i++) {
+      var cert = state.certifications[i];
+      var leftHtml = '<span class="cv-item-role">' + escapeHtml(cert.name) + '</span>' +
+        (cert.organization ? '<span class="cv-item-org"> — ' + escapeHtml(cert.organization) + '</span>' : '');
+      certHtml += cvItemRow(leftHtml, cert.issueDate ? escapeHtml(cert.issueDate) : "", "", "");
+    }
+    html += cvSection("CERTIFICATIONS", certHtml);
   }
 
-  if (state.languages && state.languages.length > 0) {
-    html += `
-      <div class="cv-section">
-        <h3 class="cv-section-title">LANGUAGES</h3>
-        <div class="cv-skills-tags">
-          ${state.languages.map(lang => `
-            <span class="cv-skill-tag">${escapeHtml(lang.language)}: ${escapeHtml(lang.proficiency || 'Proficient')}</span>
-          `).join('')}
-        </div>
-      </div>
-    `;
+  /* Courses */
+  if (state.courses && state.courses.length) {
+    var coursesHtml = "";
+    for (var i = 0; i < state.courses.length; i++) {
+      var c = state.courses[i];
+      var leftHtml = '<span class="cv-item-role">' + escapeHtml(c.name) + '</span>' +
+        (c.organization ? '<span class="cv-item-org"> — ' + escapeHtml(c.organization) + '</span>' : '');
+      coursesHtml += cvItemRow(leftHtml, "", "", "");
+    }
+    html += cvSection("COURSES & TRAINING", coursesHtml);
   }
 
+  /* Awards */
+  if (state.awards && state.awards.length) {
+    var awardsHtml = "";
+    for (var i = 0; i < state.awards.length; i++) {
+      var a = state.awards[i];
+      var leftHtml = '<span class="cv-item-role">' + escapeHtml(a.name) + '</span>' +
+        (a.organization ? '<span class="cv-item-org"> — ' + escapeHtml(a.organization) + '</span>' : '');
+      awardsHtml += cvItemRow(leftHtml, "", "", "");
+    }
+    html += cvSection("HONORS & AWARDS", awardsHtml);
+  }
+
+  /* Volunteer */
+  if (state.volunteer && state.volunteer.length) {
+    var volHtml = "";
+    for (var i = 0; i < state.volunteer.length; i++) {
+      var v = state.volunteer[i];
+      var leftHtml = '<span class="cv-item-role">' + escapeHtml(v.name) + '</span>' +
+        (v.organization ? '<span class="cv-item-org"> — ' + escapeHtml(v.organization) + '</span>' : '');
+      volHtml += cvItemRow(leftHtml, "", "", "");
+    }
+    html += cvSection("VOLUNTEER WORK", volHtml);
+  }
+
+  /* Organizations */
+  if (state.organizations && state.organizations.length) {
+    var orgHtml = "";
+    for (var i = 0; i < state.organizations.length; i++) {
+      var o = state.organizations[i];
+      var leftHtml = '<span class="cv-item-role">' + escapeHtml(o.name) + '</span>' +
+        (o.organization ? '<span class="cv-item-org"> — ' + escapeHtml(o.organization) + '</span>' : '');
+      orgHtml += cvItemRow(leftHtml, "", "", "");
+    }
+    html += cvSection("ORGANIZATIONS", orgHtml);
+  }
+
+  /* Languages */
+  if (state.languages && state.languages.length) {
+    var langTags = state.languages.map(function(lang) {
+      return escapeHtml(lang.language) + ": " + escapeHtml(lang.proficiency || "Proficient");
+    });
+    html += cvSection("LANGUAGES", skillTagList(langTags));
+  }
+
+  /* Regional / Personal Details */
   if (state.regionalDetails && state.regionalDetails.enabled) {
-    const r = state.regionalDetails;
-    html += `
-      <div class="cv-section">
-        <h3 class="cv-section-title">PERSONAL DETAILS</h3>
-        <div style="font-size:0.85rem; color:#475569; display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
-          ${r.dateOfBirth ? `<div><strong>Date of Birth:</strong> ${escapeHtml(r.dateOfBirth)}</div>` : ''}
-          ${r.nationality ? `<div><strong>Nationality:</strong> ${escapeHtml(r.nationality)}</div>` : ''}
-          ${r.maritalStatus ? `<div><strong>Marital Status:</strong> ${escapeHtml(r.maritalStatus)}</div>` : ''}
-          ${r.militaryStatus ? `<div><strong>Military Status:</strong> ${escapeHtml(r.militaryStatus)}</div>` : ''}
-        </div>
-      </div>
-    `;
+    var r = state.regionalDetails;
+    var fields = "";
+    if (r.dateOfBirth)    fields += '<div><strong>Date of Birth:</strong> '   + escapeHtml(r.dateOfBirth)   + '</div>';
+    if (r.nationality)    fields += '<div><strong>Nationality:</strong> '      + escapeHtml(r.nationality)   + '</div>';
+    if (r.maritalStatus)  fields += '<div><strong>Marital Status:</strong> '   + escapeHtml(r.maritalStatus) + '</div>';
+    if (r.militaryStatus) fields += '<div><strong>Military Status:</strong> ' + escapeHtml(r.militaryStatus) + '</div>';
+    if (fields) {
+      html += cvSection("PERSONAL DETAILS", '<div class="cv-personal-details">' + fields + '</div>');
+    }
   }
 
+  /* References */
   if (state.references && state.references.availableUponRequest) {
-    html += `
-      <div class="cv-section">
-        <h3 class="cv-section-title">REFERENCES</h3>
-        <p style="font-size:0.85rem; color:#64748b; font-style:italic;">References available upon request.</p>
-      </div>
-    `;
+    html += cvSection("REFERENCES", '<p style="font-size:0.85rem;color:#64748b;font-style:italic;">References available upon request.</p>');
   }
 
   paper.innerHTML = html;
 
-  if (state.customization) {
-    if (state.customization.primaryColor) {
-      document.querySelectorAll(".cv-section-title").forEach(el => {
-        el.style.color = state.customization.primaryColor;
-      });
+  /* Apply customization */
+  var c = state.customization;
+  if (c) {
+    if (c.primaryColor) {
+      var titles = paper.querySelectorAll(".cv-section-title");
+      for (var i = 0; i < titles.length; i++) {
+        titles[i].style.color = c.primaryColor;
+      }
     }
-    if (state.customization.font) {
-      paper.style.fontFamily = `'${state.customization.font}', sans-serif`;
+    if (c.font) {
+      paper.style.fontFamily = "'" + c.font + "', sans-serif";
     }
   }
 }
 
-function formatDates(start, end, current) {
-  if (!start && !end) return '';
-  if (current) return `${start || ''} - Present`;
-  if (start && end) return `${start} - ${end}`;
-  return start || end || '';
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+/* ── Init ─────────────────────────────────────────────────────────────────── */
 
 window.initCvPreview = function() {
-  const state = window.CVState.getState();
-  renderCvPreview(state);
+  renderCvPreview(window.CVState.getState());
 
-  window.CVState.subscribe((newState) => {
+  window.CVState.subscribe(function(newState) {
     renderCvPreview(newState);
   });
 };

@@ -11,9 +11,11 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap"
     rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/portfolio.css">
 </head>
 
 <body class="bg-light">
@@ -24,8 +26,9 @@
       class="top-bar border-bottom bg-white px-3 px-md-4 d-flex align-items-center justify-content-between shadow-sm flex-wrap gap-2">
 
       <div class="d-flex align-items-center gap-2 gap-md-3">
-        <a href="index.html"
-          class="logo-icon d-flex align-items-center justify-content-center rounded bg-primary bg-opacity-10 text-primary p-2 text-decoration-none">
+        <a href="profile.html"
+          class="logo-icon d-flex align-items-center justify-content-center rounded bg-primary bg-opacity-10 text-primary p-2 text-decoration-none"
+          title="Back to Dashboard">
           <i class="fa-solid fa-arrow-left fs-5"></i>
         </a>
         <div class="d-none d-sm-block">
@@ -61,13 +64,13 @@
         </button>
 
         <div class="d-flex align-items-center gap-2">
-          <a href="profile.html"
+          <a href="profile.html" id="userProfilePill"
             class="d-none d-md-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-light border text-decoration-none"
             title="Go to Profile">
             <i class="fa-solid fa-circle-user text-primary fs-5"></i>
             <span id="userNameDisplay" class="fw-semibold small text-dark">User</span>
           </a>
-          <button onclick="window.Auth.logout()" class="btn btn-sm btn-outline-danger rounded-pill px-2 px-md-3"
+          <button onclick="window.Auth.logout()" id="signOutBtn" class="btn btn-sm btn-outline-danger rounded-pill px-2 px-md-3"
             title="Sign Out">
             <i class="fa-solid fa-right-from-bracket"></i>
           </button>
@@ -154,30 +157,54 @@
       </section>
 
       <section
-        class="col-12 col-md-6 col-lg-5 col-xl-5 bg-secondary bg-opacity-10 p-3 p-md-4 overflow-y-auto position-relative d-flex justify-content-center align-items-start preview-panel">
+        class="col-12 col-md-6 col-lg-5 col-xl-5 bg-secondary bg-opacity-10 p-3 p-md-4 overflow-y-auto position-relative preview-panel">
 
-        <div
-          class="ats-card bg-white px-3 py-2 rounded-pill shadow-sm border position-absolute top-0 end-0 m-3 d-flex align-items-center gap-2"
-          id="atsCard">
-          <div class="ats-score-gauge position-relative">
-            <svg class="ats-circle" viewBox="0 0 36 36">
-              <path class="circle-bg"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path id="atsCircleProgress" class="circle-progress" stroke-dasharray="92, 100"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            </svg>
-            <span id="atsScoreValue" class="ats-score-num">92</span>
+        <!-- CV Preview View Container -->
+        <div id="cvPreviewWrapper" class="w-100 d-flex flex-column align-items-center">
+          <div class="w-100 d-flex justify-content-between align-items-center mb-3 bg-white p-2 px-3 rounded-3 border shadow-sm flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+              <span class="small fw-bold text-dark"><i class="fa-solid fa-id-card text-primary me-1"></i> Live CV Preview</span>
+              
+              <!-- Clean Inline ATS Score Badge -->
+              <div class="ats-card bg-light px-3 py-1 rounded-pill border d-flex align-items-center gap-2" id="atsCard">
+                <div class="ats-score-gauge position-relative" style="width: 26px; height: 26px;">
+                  <svg class="ats-circle" viewBox="0 0 36 36">
+                    <path class="circle-bg"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path id="atsCircleProgress" class="circle-progress" stroke-dasharray="50, 100"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  </svg>
+                  <span id="atsScoreValue" class="ats-score-num" style="font-size: 0.62rem;">50</span>
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <span class="ats-label text-muted fw-bold small">ATS:</span>
+                  <span id="atsScoreStatus" class="ats-status text-danger fw-semibold small"><i
+                      class="fa-solid fa-circle-xmark"></i> Needs Improvement</span>
+                </div>
+              </div>
+            </div>
+
+            <a id="openFullCvBtn" href="cv.html" target="_blank" class="btn btn-sm btn-outline-primary rounded-2 px-2 py-1 small">
+              <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Open Full Page
+            </a>
           </div>
-          <div class="d-flex flex-column">
-            <span class="ats-label text-muted fw-bold">ATS Score</span>
-            <span id="atsScoreStatus" class="ats-status text-success fw-semibold"><i
-                class="fa-solid fa-circle-check"></i> Optimized</span>
+
+          <div class="paper-container my-3">
+            <div class="paper-sheet bg-white shadow-lg p-5 border rounded" id="cvPaper"></div>
           </div>
         </div>
 
-        <div class="paper-container my-5">
-          <div class="paper-sheet bg-white shadow-lg p-5 border rounded" id="cvPaper"></div>
+        <!-- Portfolio Preview View Container -->
+        <div id="portfolioPreviewWrapper" class="w-100 d-none">
+          <div class="d-flex justify-content-between align-items-center mb-3 bg-white p-2 px-3 rounded-3 border shadow-sm">
+            <span class="small fw-bold text-dark"><i class="fa-solid fa-globe text-success me-1"></i> Live Portfolio Preview</span>
+            <a id="openFullPortfolioBtn" href="portfolio.html" target="_blank" class="btn btn-sm btn-outline-primary rounded-2 px-2 py-1 small">
+              <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Open Full Page
+            </a>
+          </div>
+          <div id="portfolio-root" class="bg-white rounded-3 border shadow-sm overflow-hidden p-2"></div>
         </div>
+
       </section>
 
     </main>
@@ -190,6 +217,7 @@
   <script src="js/preview.js"></script>
   <script src="js/editor.js"></script>
   <script src="js/pdf.js"></script>
+  <script src="js/portfolio.js"></script>
   <script src="js/app.js"></script>
 </body>
 
