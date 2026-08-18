@@ -1,0 +1,41 @@
+* {
+    box-sizing: border-box;
+}
+body {
+    background-color: #F7F9FB;
+}
+.personalImg {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.aboutUser {
+    margin-top: 8%;
+}
+.discriptionOfUser {
+    color: rgb(67 70 85);
+    width: 80%;
+}
+.backgroundLinks {
+    background-color:  #E6E8EA;
+}
+.activeCircel {
+    width: 20px;
+    height: 20px;
+    background-color: blue;
+}
+.borderLeft {
+    width: 2px;
+    height: 100%;
+}
+.activeCircelNotActive {
+    width: 20px;
+    height: 20px;
+    background-color:#F3F5F7 ;
+}
+.backgroundTechnology {
+    background-color: #F1F5F9;
+    padding: 6px;
+    border-radius: 20%;
+}
