@@ -2,7 +2,7 @@
 document.addEventListener("DOMContentLoaded", function() {
   window.Auth.requireAuth();
 
-  /* ── User & Guest Header Display ────────────────────────────────────────── */
+  /* User & Guest Header Display */
   var currentUser = window.Auth.getCurrentUser();
   var userNameEl  = document.getElementById("userNameDisplay");
   var userPill    = document.getElementById("userProfilePill");
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  /* ── Doc title input ─────────────────────────────────────────────────── */
+  /*  Doc title input */
   var docTitleInput = document.getElementById("docTitleInput");
   if (docTitleInput && window.CVState) {
     var state = window.CVState.getState();
@@ -36,13 +36,13 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  /* ── Init all modules ────────────────────────────────────────────────── */
+  /*  Init all modules */
   window.initAtsGauge();
   window.initCvPreview();
   window.initEditor();
   window.initPdfExport();
 
-  /* ── Sidebar navigation ──────────────────────────────────────────────── */
+  /*Sidebar navigation */
   var navItems = document.querySelectorAll(".sidebar-panel .nav-link");
 
   for (var i = 0; i < navItems.length; i++) {
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function() {
     })(navItems[i]);
   }
 
-  /* ── CV View vs. Portfolio View Switcher ──────────────────────────────── */
+  /* CV View vs. Portfolio View Switcher*/
   function switchPreviewView(viewName) {
     var cvBtn        = document.getElementById("cvViewBtn");
     var portfolioBtn = document.getElementById("portfolioViewBtn");
@@ -119,12 +119,12 @@ document.addEventListener("DOMContentLoaded", function() {
     switchPreviewView("cv");
   }
 
-  /* ── Publish button ──────────────────────────────────────────────────── */
+  /*  Publish button*/
   var publishBtn = document.getElementById("publishBtn");
   if (publishBtn) {
     publishBtn.addEventListener("click", function() {
       var activeDocId = window.CVState ? window.CVState.getActiveDocId() : "default_doc";
-      alert("🎉 Your CV & Portfolio are published and live!");
+      alert(" Your CV & Portfolio are published and live!");
       window.open("portfolio.html?docId=" + encodeURIComponent(activeDocId), "_blank");
     });
   }

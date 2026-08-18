@@ -1,38 +1,33 @@
-/* ==========================================================================
-   state.js — Global State Management for CV & Portfolio
-   Supports: Guest Mode (sessionStorage) & Registered User (localStorage)
-   ========================================================================== */
-
 function StateManager() {
-  this.listeners    = [];
+  this.listeners = [];
   this.currentDocId = this.getActiveDocId();
-  this.state        = this.loadCurrentState();
+  this.state = this.loadCurrentState();
 }
 
-StateManager.prototype.getActiveDocId = function() {
+StateManager.prototype.getActiveDocId = function () {
   var urlParams = new URLSearchParams(window.location.search);
   return urlParams.get("docId") || "default_doc";
 };
 
-StateManager.prototype.isGuest = function() {
+StateManager.prototype.isGuest = function () {
   return !(window.Auth && window.Auth.getCurrentUser());
 };
 
 /* Get storage driver: sessionStorage for guests, localStorage for registered users */
-StateManager.prototype.getStorage = function() {
+StateManager.prototype.getStorage = function () {
   return this.isGuest() ? window.sessionStorage : window.localStorage;
 };
 
-StateManager.prototype.getStorageKey = function() {
+StateManager.prototype.getStorageKey = function () {
   if (this.isGuest()) {
     return "xpvolio_guest_state_" + this.currentDocId;
   }
-  var user  = window.Auth.getCurrentUser();
+  var user = window.Auth.getCurrentUser();
   var email = user ? user.email.toLowerCase().trim() : "guest";
   return "xpvolio_state_" + email + "_" + this.currentDocId;
 };
 
-StateManager.prototype.getDocTitleFromProfile = function() {
+StateManager.prototype.getDocTitleFromProfile = function () {
   if (this.isGuest()) {
     var urlParams = new URLSearchParams(window.location.search);
     var pTitle = urlParams.get("title");
@@ -59,59 +54,60 @@ StateManager.prototype.getDocTitleFromProfile = function() {
   return passedTitle ? decodeURIComponent(passedTitle) : null;
 };
 
-StateManager.prototype.getDefaultState = function() {
-  var isGuestUser    = this.isGuest();
-  var user           = isGuestUser ? null : window.Auth.getCurrentUser();
-  var userName       = user ? user.name  : "Your Name";
-  var userEmail      = user ? user.email : "user@example.com";
-  var resolvedTitle  = this.getDocTitleFromProfile() || "Software Engineer Resume";
+StateManager.prototype.getDefaultState = function () {
+  var isGuestUser = this.isGuest();
+  var user = isGuestUser ? null : window.Auth.getCurrentUser();
+  var userName = user ? user.name : "Your Name";
+  var userEmail = user ? user.email : "user@example.com";
+  var resolvedTitle =
+    this.getDocTitleFromProfile() || "Software Engineer Resume";
 
   return {
-    docId:        this.currentDocId,
-    docTitle:     resolvedTitle,
+    docId: this.currentDocId,
+    docTitle: resolvedTitle,
     personalInfo: {
-      fullName:          userName,
+      fullName: userName,
       professionalTitle: "",
-      email:             userEmail,
-      phone:             "",
-      address:           "",
+      email: userEmail,
+      phone: "",
+      address: "",
       socialLinks: {
         linkedin: "",
-        github:   "",
-        website:  "",
-        behance:  ""
-      }
+        github: "",
+        website: "",
+        behance: "",
+      },
     },
-    summary:         "",
-    experience:      [],
-    education:       [],
-    skills:          [],
-    projects:        [],
-    services:        [],
-    certifications:  [],
-    courses:         [],
-    languages:       [],
-    awards:          [],
-    volunteer:       [],
-    organizations:   [],
+    summary: "",
+    experience: [],
+    education: [],
+    skills: [],
+    projects: [],
+    services: [],
+    certifications: [],
+    courses: [],
+    languages: [],
+    awards: [],
+    volunteer: [],
+    organizations: [],
     regionalDetails: {
-      enabled:        false,
-      dateOfBirth:    "",
-      nationality:    "",
-      maritalStatus:  "",
-      militaryStatus: "Not Applicable"
+      enabled: false,
+      dateOfBirth: "",
+      nationality: "",
+      maritalStatus: "",
+      militaryStatus: "Not Applicable",
     },
     references: {
-      availableUponRequest: true
+      availableUponRequest: true,
     },
     customization: {
       primaryColor: "#004ac6",
-      font:         "Inter"
-    }
+      font: "Inter",
+    },
   };
 };
 
-StateManager.prototype.loadCurrentState = function() {
+StateManager.prototype.loadCurrentState = function () {
   try {
     var storage = this.getStorage();
     var data = storage.getItem(this.getStorageKey());
@@ -129,7 +125,7 @@ StateManager.prototype.loadCurrentState = function() {
   return this.getDefaultState();
 };
 
-StateManager.prototype.saveState = function() {
+StateManager.prototype.saveState = function () {
   try {
     var storage = this.getStorage();
     storage.setItem(this.getStorageKey(), JSON.stringify(this.state));
@@ -141,7 +137,7 @@ StateManager.prototype.saveState = function() {
   }
 };
 
-StateManager.prototype.syncWithProfileList = function() {
+StateManager.prototype.syncWithProfileList = function () {
   var user = window.Auth ? window.Auth.getCurrentUser() : null;
   if (!user) return;
 
@@ -150,9 +146,9 @@ StateManager.prototype.syncWithProfileList = function() {
     var docs = JSON.parse(localStorage.getItem(listKey)) || [];
     for (var i = 0; i < docs.length; i++) {
       if (docs[i].id === this.currentDocId) {
-        docs[i].title     = this.state.docTitle || docs[i].title;
+        docs[i].title = this.state.docTitle || docs[i].title;
         docs[i].updatedAt = new Date().toLocaleDateString();
-        docs[i].atsScore  = this.calculateAtsScore();
+        docs[i].atsScore = this.calculateAtsScore();
         localStorage.setItem(listKey, JSON.stringify(docs));
         break;
       }
@@ -162,12 +158,12 @@ StateManager.prototype.syncWithProfileList = function() {
   }
 };
 
-StateManager.prototype.getState = function() {
+StateManager.prototype.getState = function () {
   return this.state;
 };
 
-StateManager.prototype.setState = function(path, value) {
-  var keys    = path.split(".");
+StateManager.prototype.setState = function (path, value) {
+  var keys = path.split(".");
   var current = this.state;
 
   for (var i = 0; i < keys.length - 1; i++) {
@@ -180,27 +176,28 @@ StateManager.prototype.setState = function(path, value) {
   this.notify();
 };
 
-StateManager.prototype.updateState = function(fn) {
+StateManager.prototype.updateState = function (fn) {
   fn(this.state);
   this.saveState();
   this.notify();
 };
 
-StateManager.prototype.subscribe = function(listener) {
+StateManager.prototype.subscribe = function (listener) {
   this.listeners.push(listener);
 };
 
-StateManager.prototype.notify = function() {
+StateManager.prototype.notify = function () {
   for (var i = 0; i < this.listeners.length; i++) {
     this.listeners[i](this.state);
   }
 };
 
-StateManager.prototype.calculateAtsScore = function() {
+StateManager.prototype.calculateAtsScore = function () {
   var score = 20;
   var p = this.state.personalInfo || {};
 
-  if (p.fullName && p.fullName.trim() && p.fullName !== "Your Name") score += 15;
+  if (p.fullName && p.fullName.trim() && p.fullName !== "Your Name")
+    score += 15;
   if (p.professionalTitle && p.professionalTitle.trim()) score += 10;
   if (p.email && p.email.trim() && p.email !== "user@example.com") score += 10;
   if (p.phone && p.phone.trim()) score += 10;
@@ -212,6 +209,5 @@ StateManager.prototype.calculateAtsScore = function() {
   return Math.min(score, 100);
 };
 
-/* ── Global State Instance ────────────────────────────────────────────────── */
 
 window.CVState = new StateManager();

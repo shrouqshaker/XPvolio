@@ -1,8 +1,3 @@
-/* ==========================================================================
-   editor.js — Form rendering and data binding for each CV section
-   ========================================================================== */
-
-/* ── Section Metadata ─────────────────────────────────────────────────────── */
 
 var SECTION_INFO = {
   personalInfo:    { title: "Personal Info",               subtitle: "Basic contact details and professional links." },
@@ -23,7 +18,7 @@ var SECTION_INFO = {
   customization:   { title: "Document Customization",      subtitle: "Adjust styling, primary color, and fonts." }
 };
 
-/* ── Default item templates for each array section ────────────────────────── */
+/* Default item templates for each array section */
 
 var ITEM_DEFAULTS = {
   experience:     { jobTitle: "", company: "", startDate: "", endDate: "", currentlyWorking: false, description: "" },
@@ -41,14 +36,14 @@ var ITEM_DEFAULTS = {
 
 var currentActiveSection = "personalInfo";
 
-/* ── Escape helpers ───────────────────────────────────────────────────────── */
+/*  Escape helpers  */
 
 function escapeAttr(str) {
   if (str === null || str === undefined) return "";
   return String(str).replace(/"/g, "&quot;");
 }
 
-/* ── Shared HTML building blocks ──────────────────────────────────────────── */
+/*Shared HTML building blocks  */
 
 function itemHeader(label, section, index) {
   return (
@@ -85,7 +80,7 @@ function textareaInput(attrs, value, rows) {
   return '<textarea class="form-control" rows="' + (rows || 3) + '" ' + attrs + '>' + escapeAttr(value) + '</textarea>';
 }
 
-/* ── Section Renderers ────────────────────────────────────────────────────── */
+/* Section Renderers  */
 
 function renderPersonalInfoForm(p) {
   p = p || {};
@@ -337,7 +332,7 @@ function renderCustomizationForm(c) {
   );
 }
 
-/* ── Main Section Renderer ────────────────────────────────────────────────── */
+/*  Main Section Renderer  */
 
 function renderEditorSection(sectionKey) {
   currentActiveSection = sectionKey;
@@ -378,7 +373,7 @@ function renderEditorSection(sectionKey) {
   container.innerHTML = html;
 }
 
-/* ── Event Delegation — single listener on the container ─────────────────── */
+/*Event Delegation — single listener on the container  */
 
 document.addEventListener("DOMContentLoaded", function() {
   var container = document.getElementById("editorContent");
@@ -475,7 +470,7 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
-/* ── Init ─────────────────────────────────────────────────────────────────── */
+/* Init */
 
 window.initEditor = function() {
   renderEditorSection("personalInfo");

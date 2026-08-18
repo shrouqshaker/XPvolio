@@ -1,7 +1,3 @@
-/* ==========================================================================
-   portfolio.js — Live Portfolio Page Renderer from CVState
-   ========================================================================== */
-
 function escapeHtml(str) {
   if (!str) return "";
   return String(str)

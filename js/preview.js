@@ -1,8 +1,5 @@
-/* ==========================================================================
-   preview.js — Live CV paper rendering from CVState
-   ========================================================================== */
 
-/* ── Escape helper ────────────────────────────────────────────────────────── */
+/* Escape helper  */
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -13,7 +10,7 @@ function escapeHtml(str) {
     .replace(/"/g,  "&quot;");
 }
 
-/* ── Date formatting ──────────────────────────────────────────────────────── */
+/*Date formatting */
 
 function formatDates(start, end, isCurrent) {
   if (!start && !end) return "";
@@ -22,7 +19,7 @@ function formatDates(start, end, isCurrent) {
   return start || end || "";
 }
 
-/* ── Section builder helpers ──────────────────────────────────────────────── */
+/*  Section builder helpers */
 
 function cvSection(title, bodyHtml) {
   return (
@@ -53,7 +50,7 @@ function skillTagList(items) {
   return '<div class="cv-skills-tags">' + tags.join("") + '</div>';
 }
 
-/* ── Main render ──────────────────────────────────────────────────────────── */
+/*  Main render */
 
 function renderCvPreview(state) {
   var paper = document.getElementById("cvPaper");
@@ -257,7 +254,6 @@ function renderCvPreview(state) {
   }
 }
 
-/* ── Init ─────────────────────────────────────────────────────────────────── */
 
 window.initCvPreview = function() {
   renderCvPreview(window.CVState.getState());
