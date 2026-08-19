@@ -1,6 +1,4 @@
-
 /* Escape helper  */
-
 function escapeHtml(str) {
   if (!str) return "";
   return String(str)

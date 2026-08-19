@@ -4,10 +4,6 @@ body {
   color: #191c1e;
 }
 
-nav {
-  margin-bottom: 40px;
-}
-
 .ambient-shadow {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
@@ -20,46 +16,15 @@ nav {
 }
 
 .custom-card:hover {
-  border-color: rgba(0, 74, 198, 0.4);
-}
-
-.form-control,
-.form-select {
-  background-color: #f7f9fb;
-  border-color: rgba(115, 118, 134, 0.3);
-  border-radius: 0.5rem;
-  font-size: 16px;
-  padding: 0.625rem 0.875rem;
-}
-
-.form-control:focus,
-.form-select:focus {
-  background-color: #ffffff;
-  border-color: #004ac6;
-  box-shadow: 0 0 0 0.25rem rgba(0, 74, 198, 0.15);
-}
-
-.btn-primary-custom {
-  background-color: #004ac6;
-  color: #ffffff;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  padding: 0.625rem 1.5rem;
-  transition: background-color 0.2s ease;
-}
-
-.btn-primary-custom:hover {
-  background-color: #2563eb;
-  color: #ffffff;
+  border-color: rgba(37, 99, 235, 0.4);
 }
 
 .icon-box {
   width: 44px;
   height: 44px;
   border-radius: 0.5rem;
-  background-color: #eceef0;
-  color: #004ac6;
+  background-color: #eff6ff;
+  color: #2563eb;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,7 +32,7 @@ nav {
 }
 
 .custom-card:hover .icon-box {
-  background-color: #004ac6;
+  background-color: #2563eb;
   color: #ffffff;
 }
 
@@ -89,6 +54,6 @@ nav {
   bottom: -3px;
   width: 8px;
   height: 8px;
-  background-color: #004ac6;
+  background-color: #2563eb;
   transform: rotate(45deg);
 }

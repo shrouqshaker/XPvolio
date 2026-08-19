@@ -1,7 +1,3 @@
-/* ==========================================================================
-   auth.js — Authentication, Session & Local Storage Management
-   ========================================================================== */
-
 var USERS_KEY   = "xpvolio_registered_users";
 var SESSION_KEY = "xpvolio_active_session";
 

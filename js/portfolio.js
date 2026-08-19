@@ -73,32 +73,30 @@ function renderPortfolio() {
 
   var state = window.CVState ? window.CVState.getState() : null;
   if (!state) {
-    root.innerHTML = '<div class="p-4 text-center text-muted">No CV data found. Please fill in the editor first.</div>';
+    root.innerHTML = '<div class="p-4 text-center text-muted">No portfolio data found.</div>';
     return;
   }
 
   var p     = state.personalInfo || {};
   var links = p.socialLinks     || {};
 
-  /* Social Links */
   var socialLinks = [];
   if (p.email)        socialLinks.push({ href: "mailto:" + p.email,         icon: "mail",   label: "Email" });
-  if (links.linkedin) socialLinks.push({ href: "https://" + links.linkedin, icon: "link",   label: "LinkedIn" });
-  if (links.github)   socialLinks.push({ href: "https://" + links.github,   icon: "code",   label: "GitHub" });
-  if (links.website)  socialLinks.push({ href: "https://" + links.website,  icon: "public", label: "Website" });
-  if (links.behance)  socialLinks.push({ href: "https://" + links.behance,  icon: "palette", label: "Behance" });
+  if (links.linkedin) socialLinks.push({ href: links.linkedin.startsWith("http") ? links.linkedin : "https://" + links.linkedin, icon: "link",   label: "LinkedIn" });
+  if (links.github)   socialLinks.push({ href: links.github.startsWith("http") ? links.github : "https://github.com/" + links.github,   icon: "code",   label: "GitHub" });
+  if (links.website)  socialLinks.push({ href: links.website.startsWith("http") ? links.website : "https://" + links.website,  icon: "public", label: "Website" });
+  if (links.behance)  socialLinks.push({ href: links.behance.startsWith("http") ? links.behance : "https://behance.net/" + links.behance,  icon: "palette", label: "Behance" });
 
   var socialHtml = "";
   for (var i = 0; i < socialLinks.length; i++) {
     var sLink = socialLinks[i];
     socialHtml += [
-      '<a class="backgroundLinks" href="' + escapeHtml(sLink.href) + '" target="_blank" aria-label="' + sLink.label + '" title="' + sLink.label + '">',
+      '<a class="backgroundLinks" href="' + escapeHtml(sLink.href) + '" target="_blank" rel="noopener noreferrer" aria-label="' + sLink.label + '" title="' + sLink.label + '">',
         '<span class="material-symbols-outlined fs-5">' + sLink.icon + '</span>',
       '</a>'
     ].join("");
   }
 
-  /* Experience list */
   var experience = [];
   var exps = state.experience || [];
   for (var eIdx = 0; eIdx < exps.length; eIdx++) {
@@ -112,7 +110,6 @@ function renderPortfolio() {
     });
   }
 
-  /* Education list */
   var education = [];
   var edus = state.education || [];
   for (var edIdx = 0; edIdx < edus.length; edIdx++) {
@@ -126,7 +123,6 @@ function renderPortfolio() {
     });
   }
 
-  /* Skills & percentages */
   var levelMap = { Beginner: 40, Intermediate: 60, Advanced: 80, Expert: 95 };
   var skills = [];
   var sks = state.skills || [];
@@ -138,10 +134,7 @@ function renderPortfolio() {
     });
   }
 
-  /* Projects list */
   var projects = state.projects || [];
-
-  /* Extract unique technologies across projects */
   var technologies = [];
   for (var pIdx = 0; pIdx < projects.length; pIdx++) {
     var techList = Array.isArray(projects[pIdx].technologies)
@@ -156,10 +149,7 @@ function renderPortfolio() {
     }
   }
 
-  /* Services */
-  var services = state.services || [];
-
-  /* Certifications & Courses */
+  var services       = state.services       || [];
   var certifications = state.certifications || [];
   var courses        = state.courses        || [];
   var awards         = state.awards         || [];
@@ -167,13 +157,12 @@ function renderPortfolio() {
   var volunteer      = state.volunteer      || [];
   var organizations  = state.organizations  || [];
 
-  /* ── Stats Grid ── */
+  /* Stats Grid */
   var statCards = [];
   if (experience.length)     statCards.push({ value: experience.length,     label: "Positions" });
   if (projects.length)       statCards.push({ value: projects.length,       label: "Projects" });
   if (skills.length)         statCards.push({ value: skills.length,         label: "Skills" });
   if (certifications.length) statCards.push({ value: certifications.length, label: "Certificates" });
-  if (education.length && statCards.length < 4) statCards.push({ value: education.length, label: "Degrees" });
 
   var statsHtml = "";
   if (statCards.length > 0) {
@@ -190,7 +179,7 @@ function renderPortfolio() {
     statsHtml += '</div></section>';
   }
 
-  /* ── Experience & Education Panel ── */
+  /* Experience & Education */
   var expEduHtml = "";
   if (experience.length || education.length) {
     expEduHtml += '<section class="portfolio-panel">';
@@ -203,7 +192,7 @@ function renderPortfolio() {
     expEduHtml += '</section>';
   }
 
-  /* ── Key Projects Panel ── */
+  /* Key Projects */
   var projectsHtml = "";
   if (projects.length > 0) {
     var projectCards = "";
@@ -244,7 +233,7 @@ function renderPortfolio() {
     );
   }
 
-  /* ── Skills & Tech Stack Panel ── */
+  /* Skills & Tech Stack */
   var skillsHtml = "";
   if (skills.length || technologies.length) {
     skillsHtml += '<section class="portfolio-panel">';
@@ -266,7 +255,7 @@ function renderPortfolio() {
     skillsHtml += '</section>';
   }
 
-  /* ── Services Panel ── */
+  /* Services */
   var servicesHtml = "";
   if (services.length > 0) {
     var serviceCards = "";
@@ -288,7 +277,7 @@ function renderPortfolio() {
     );
   }
 
-  /* ── Certifications & Awards Panel ── */
+  /* Certifications & Awards */
   var certsAwardsHtml = "";
   if (certifications.length || courses.length || awards.length) {
     var listItems = "";
@@ -331,7 +320,7 @@ function renderPortfolio() {
     );
   }
 
-  /* ── Languages Panel ── */
+  /* Languages */
   var languagesHtml = "";
   if (languages.length > 0) {
     var langCards = "";
@@ -353,7 +342,7 @@ function renderPortfolio() {
     );
   }
 
-  /* ── Volunteer & Organizations Panel ── */
+  /* Volunteer & Organizations */
   var volOrgHtml = "";
   if (volunteer.length || organizations.length) {
     var voItems = "";
@@ -384,23 +373,10 @@ function renderPortfolio() {
     );
   }
 
-  /* Summary / Description text */
   var aboutText = state.summary || p.address || "";
 
   root.innerHTML = [
     '<div class="portfolio-shell">',
-      '<nav class="portfolio-topbar">',
-        '<div class="portfolio-topbar-inner d-flex align-items-center justify-content-between">',
-          '<div class="portfolio-header-brand"><i class="fa-solid fa-file-signature me-1"></i> XPvolio</div>',
-          '<div class="d-flex align-items-center gap-2">',
-            '<button class="portfolio-action" onclick="window.print()">',
-              '<span class="material-symbols-outlined fs-6">download</span>',
-              '<span>Print / PDF</span>',
-            '</button>',
-          '</div>',
-        '</div>',
-      '</nav>',
-
       '<section class="aboutUser">',
         '<div class="d-flex flex-column align-items-center text-center">',
           '<div class="fw-bold fs-3 text-dark mb-1">' + escapeHtml(p.fullName || "Your Name") + '</div>',
@@ -422,8 +398,6 @@ function renderPortfolio() {
     '</div>'
   ].join("");
 }
-
-/* ── Init ───────────────────────────────────────────────────────────────── */
 
 document.addEventListener("DOMContentLoaded", function() {
   renderPortfolio();

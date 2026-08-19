@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,13 +9,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body class="auth-page-bg d-flex align-items-center justify-content-center py-5 px-3">
-
   <div class="auth-card bg-white p-4 p-md-5">
     <div class="text-center mb-4">
-      <a href="index.html"
-        class="d-inline-flex align-items-center gap-2 text-decoration-none fw-bold text-primary fs-3 mb-2">
+      <a href="index.html" class="d-inline-flex align-items-center gap-2 text-decoration-none fw-bold text-primary fs-3 mb-2">
         <i class="fa-solid fa-file-signature"></i> XPvolio
       </a>
       <p class="text-secondary small mb-0">Access your saved CVs and Portfolio Websites</p>
@@ -26,29 +22,23 @@
 
     <ul class="nav nav-pills nav-justified bg-light p-1 rounded-pill mb-4" id="authTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active rounded-pill fw-bold" id="login-tab" data-bs-toggle="tab" data-bs-target="#login"
-          type="button" role="tab">Sign In</button>
+        <button class="nav-link active rounded-pill fw-bold" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab">Sign In</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link rounded-pill fw-bold" id="register-tab" data-bs-toggle="tab" data-bs-target="#register"
-          type="button" role="tab">Register</button>
+        <button class="nav-link rounded-pill fw-bold" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab">Register</button>
       </li>
     </ul>
 
     <div class="tab-content" id="authTabsContent">
-
-      <!-- Sign In Tab -->
       <div class="tab-pane fade show active" id="login" role="tabpanel">
         <form id="loginForm" onsubmit="handleLogin(event)">
           <div class="mb-3">
             <label class="form-label text-secondary fw-semibold small text-uppercase">Email Address</label>
-            <input type="email" id="loginEmail" class="form-control form-control-lg bg-light border-0"
-              placeholder="alex@example.com" required>
+            <input type="email" id="loginEmail" class="form-control form-control-lg bg-light border-0" placeholder="alex@example.com" required>
           </div>
           <div class="mb-3">
             <label class="form-label text-secondary fw-semibold small text-uppercase">Password</label>
-            <input type="password" id="loginPassword" class="form-control form-control-lg bg-light border-0"
-              placeholder="••••••••" required>
+            <input type="password" id="loginPassword" class="form-control form-control-lg bg-light border-0" placeholder="••••••••" required>
           </div>
           <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="form-check">
@@ -61,35 +51,29 @@
         </form>
       </div>
 
-      <!-- Register Tab -->
       <div class="tab-pane fade" id="register" role="tabpanel">
         <form id="registerForm" onsubmit="handleRegister(event)">
           <div class="mb-3">
             <label class="form-label text-secondary fw-semibold small text-uppercase">Full Name</label>
-            <input type="text" id="regName" class="form-control form-control-lg bg-light border-0"
-              placeholder="Alex Rivera" required>
+            <input type="text" id="regName" class="form-control form-control-lg bg-light border-0" placeholder="Alex Rivera" required>
           </div>
           <div class="mb-3">
             <label class="form-label text-secondary fw-semibold small text-uppercase">Email Address</label>
-            <input type="email" id="regEmail" class="form-control form-control-lg bg-light border-0"
-              placeholder="alex@example.com" required>
+            <input type="email" id="regEmail" class="form-control form-control-lg bg-light border-0" placeholder="alex@example.com" required>
           </div>
           <div class="mb-3">
             <label class="form-label text-secondary fw-semibold small text-uppercase">Password</label>
-            <input type="password" id="regPassword" class="form-control form-control-lg bg-light border-0"
-              placeholder="Create a password" required>
+            <input type="password" id="regPassword" class="form-control form-control-lg bg-light border-0" placeholder="Create a password" required>
           </div>
           <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-3 py-2 mb-2">Create Free Account</button>
         </form>
       </div>
-
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/auth.js"></script>
   <script>
-    /* Redirect immediately if already logged in */
     if (window.Auth && window.Auth.getCurrentUser()) {
       window.location.replace("profile.html");
     }
@@ -132,19 +116,16 @@
       handleResult(window.Auth.register(name, email, pass));
     }
 
-    /* Clear error message when switching tabs */
     var tabButtons = document.querySelectorAll('#authTabs button[data-bs-toggle="tab"]');
     for (var i = 0; i < tabButtons.length; i++) {
       tabButtons[i].addEventListener("shown.bs.tab", clearAlert);
       tabButtons[i].addEventListener("click", clearAlert);
     }
 
-    /* Clear error message when user types into any input */
     var inputs = document.querySelectorAll("input");
     for (var j = 0; j < inputs.length; j++) {
       inputs[j].addEventListener("input", clearAlert);
     }
   </script>
 </body>
-
 </html>
