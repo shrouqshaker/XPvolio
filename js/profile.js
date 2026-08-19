@@ -1,4 +1,3 @@
-
 var currentFilter = "ALL";
 
 document.addEventListener("DOMContentLoaded", function() {

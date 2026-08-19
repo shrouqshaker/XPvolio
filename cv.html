@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" href="css/styles.css">
@@ -54,10 +51,7 @@
     }
   </style>
 </head>
-
 <body>
-
-  <!-- Top Action Bar -->
   <header class="cv-view-topbar d-flex align-items-center justify-content-between shadow-sm">
     <div class="d-flex align-items-center gap-2">
       <a href="editor.html" id="backToEditorLink" class="btn btn-outline-secondary btn-sm rounded-2 d-flex align-items-center gap-2">
@@ -79,7 +73,6 @@
     </div>
   </header>
 
-  <!-- Full CV Canvas -->
   <main class="full-cv-container px-3">
     <div class="paper-sheet bg-white shadow-lg border rounded" id="cvPaper"></div>
   </main>
@@ -93,8 +86,6 @@
     document.addEventListener("DOMContentLoaded", function() {
       window.initCvPreview();
       window.initPdfExport();
-
-      /* Update back link to keep docId */
       var docId = window.CVState ? window.CVState.getActiveDocId() : "default_doc";
       var backLink = document.getElementById("backToEditorLink");
       if (backLink) {
@@ -103,5 +94,4 @@
     });
   </script>
 </body>
-
 </html>

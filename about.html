@@ -4,19 +4,17 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Us - CareerCanvas</title>
-
+    <title>About Us - XPvolio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/about.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 
-<body>
-
-    <!-- TopNavBar -->
+<body class="d-flex flex-column min-vh-100">
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-3 sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary fs-4" href="index.html">
@@ -28,31 +26,27 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-menu navbar-nav ms-auto align-items-center gap-3">
                     <li class="nav-item"><a class="nav-link fw-medium text-dark" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link fw-medium text-dark" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium active text-primary" href="about.html">About</a>
+                    </li>
                     <li class="nav-item"><a class="nav-link fw-medium text-dark" href="contact.html">Contact Us</a></li>
-                    <li class="nav-item"><a class="btn btn-outline-primary px-3 rounded-3" href="login.html">Sign
-                            In</a></li>
+                    <li class="nav-item"><a class="btn btn-outline-primary px-3 rounded-3" href="login.html">Sign In</a>
+                    </li>
                     <li class="nav-item"><a class="btn btn-primary-custom fw-medium px-3 rounded-3 shadow-sm"
-                            href="editor.html">Get Started
-                            Free</a></li>
+                            href="editor.html">Get Started Free</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="container-xl flex-grow-1 py-5 d-flex flex-column gap-5 mt-5">
-
-        <!-- Hero Section -->
         <section class="text-center mx-auto mb-5" style="max-width: 768px;">
             <h1 class="display-title mb-3">Simplifying Career Growth.</h1>
             <p class="fs-5 text-secondary-custom">
-                We believe that showcasing your professional journey shouldn't be a hurdle. CareerCanvas provides the
+                We believe that showcasing your professional journey shouldn't be a hurdle. XPvolio provides the
                 tools to build, manage, and present your career narrative with modern precision.
             </p>
         </section>
 
-        <!-- Bento Grid Section -->
         <section class="row g-4">
             <div class="col-lg-8">
                 <div class="card-custom p-4 p-md-5 h-100 d-flex flex-column justify-content-between">
@@ -83,7 +77,6 @@
             </div>
         </section>
 
-        <!-- Why We Exist Section -->
         <section class="row g-4 align-items-center">
             <div class="col-md-6 order-2 order-md-1">
                 <div class="card-custom overflow-hidden">
@@ -96,7 +89,7 @@
                 <h2 class="h3 fw-semibold mb-3">Why We Exist</h2>
                 <p class="text-secondary-custom mb-3">
                     The traditional resume is static and often fails to capture the full scope of a professional's
-                    capabilities. We built CareerCanvas because we saw a need for a dynamic, modern alternative that
+                    capabilities. We built XPvolio because we saw a need for a dynamic, modern alternative that
                     reflects the true nature of modern work—continuous, evolving, and multifaceted.
                 </p>
                 <p class="text-secondary-custom mb-0">
@@ -106,7 +99,6 @@
             </div>
         </section>
 
-        <!-- Stats Section -->
         <section class="row g-4 py-5 border-y-custom text-center">
             <div class="col-6 col-md-3">
                 <p class="display-title text-primary fw-bold mb-1">50k+</p>
@@ -126,60 +118,84 @@
             </div>
         </section>
 
-        <!-- CTA Section -->
-        <section class="card-custom text-center p-4 p-md-5" style="background-color: var(--surface-low);">
+        <section class="card-custom text-center p-4 p-md-5" style="background-color: var(--surface-low, #f8fafc);">
             <h2 class="h3 fw-semibold mb-3">Ready to elevate your career?</h2>
             <p class="fs-5 text-secondary-custom mx-auto mb-4" style="max-width: 650px;">
-                Join thousands of professionals who are already using CareerCanvas to build their next opportunity.
+                Join thousands of professionals who are already using XPvolio to build their next opportunity.
             </p>
             <div>
                 <a class="btn btn-primary-custom fw-medium px-5 py-3 rounded-3 shadow-sm" href="editor.html">Get Started
                     Free</a>
             </div>
         </section>
-
     </main>
 
-    <!-- Footer -->
-    <footer class="border-top py-4 mt-auto bg-white">
+    <footer class="footer-modern bg-dark text-white pt-5 pb-4 mt-auto">
         <div class="container-xl">
-            <div class="row g-4">
-                <div class="col-12 col-md-3">
-                    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary fs-4" href="index.html">
-                        <i class="fa-solid fa-file-signature"></i> XPvolio
+            <div class="row g-4 justify-content-between">
+                <div class="col-12 col-lg-4">
+                    <a class="d-flex align-items-center gap-2 fw-bold text-white text-decoration-none fs-4 mb-3"
+                        href="index.html">
+                        <i class="fa-solid fa-file-signature text-primary"></i> XPvolio
                     </a>
-                    <p class="small text-secondary mb-0">© 2024 XPvolio. All rights reserved.</p>
-                </div>
-                <div class="col-4 col-md-3">
-                    <h4 class="h6 fw-semibold mb-2">Product</h4>
-                    <ul class="list-unstyled mb-0">
-                        <li><a class="small text-secondary text-decoration-none" href="#">Platform</a></li>
-                        <li><a class="small text-secondary text-decoration-none" href="#">Features</a></li>
-                    </ul>
-                </div>
-                <div class="col-4 col-md-3">
-                    <h4 class="h6 fw-semibold mb-2">Legal</h4>
-                    <ul class="list-unstyled mb-0">
-                        <li><a class="small text-secondary text-decoration-none" href="#">Terms</a></li>
-                        <li><a class="small text-secondary text-decoration-none" href="#">Privacy</a></li>
-                    </ul>
-                </div>
-                <div class="col-4 col-md-3">
-                    <h4 class="h6 fw-semibold mb-2">Connect</h4>
-                    <div class="d-flex gap-3">
-                        <a class="text-secondary text-decoration-none" href="#">
-                            <i class="fa-solid fa-globe fs-5"></i>
+                    <p class="text-white-50 small pe-lg-4 mb-4">
+                        Empowering professionals to build ATS-friendly resumes and stunning live portfolios effortlessly
+                        in minutes.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="https://www.linkedin.com" class="footer-social-btn" aria-label="LinkedIn"><i
+                                class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="https://github.com" class="footer-social-btn" aria-label="GitHub"><i
+                                class="fa-brands fa-github"></i></a>
+                        <a href="https://twitter.com" class="footer-social-btn" aria-label="Twitter / X"><i
+                                class="fa-brands fa-twitter"></i>
                         </a>
-                        <a class="text-secondary text-decoration-none" href="#">
-                            <i class="fa-solid fa-share-nodes fs-5"></i>
-                        </a>
+                        <a href="https://dribbble.com" class="footer-social-btn" aria-label="Dribbble"><i
+                                class="fa-brands fa-dribbble"></i></a>
                     </div>
                 </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-uppercase fw-bold text-white mb-3 small tracking-wider">Product</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                        <li><a class="footer-link small" href="editor.html?view=cv">CV Builder</a></li>
+                        <li><a class="footer-link small" href="editor.html?view=portfolio">Portfolio Creator</a></li>
+                        <li><a class="footer-link small" href="editor.html">Templates</a></li>
+                        <li><a class="footer-link small" href="login.html">ATS Scanner</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-uppercase fw-bold text-white mb-3 small tracking-wider">Company</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                        <li><a class="footer-link small" href="about.html">About Us</a></li>
+                        <li><a class="footer-link small" href="contact.html">Contact Support</a></li>
+                        <li><a class="footer-link small" href="#">Privacy Policy</a></li>
+                        <li><a class="footer-link small" href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <h6 class="text-uppercase fw-bold text-white mb-3 small tracking-wider">Stay Updated</h6>
+                    <p class="text-white-50 small mb-3">Get the latest career tips and feature updates directly.</p>
+                    <div class="input-group">
+                        <input type="email" class="form-control form-control-sm bg-dark text-white border-secondary"
+                            placeholder="Enter your email" aria-label="Email">
+                        <button class="btn btn-primary btn-sm px-3" type="button">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-secondary my-4 opacity-25">
+
+            <div class="d-flex flex-column flex-sm-row align-items-center justify-content-center text-white-50 small">
+                <p class="mb-0">&copy; 2026 XPvolio. Built for modern creators.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/auth.js"></script>
 </body>

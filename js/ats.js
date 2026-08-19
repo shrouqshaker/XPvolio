@@ -1,4 +1,3 @@
-
 var ATS_LEVELS = [
   { min: 85, color: "#10b981", cssClass: "text-success", icon: "fa-circle-check",       label: "Optimized for ATS" },
   { min: 60, color: "#f59e0b", cssClass: "text-warning", icon: "fa-triangle-exclamation", label: "Good ATS Match"     },

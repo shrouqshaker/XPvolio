@@ -1,54 +1,8 @@
-/* Portfolio page styles */
-
 .portfolio-shell {
   max-width: 780px;
   margin: 0 auto;
   padding-bottom: 48px;
 }
-
-/* Top navigation bar */
-
-.portfolio-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 12px 20px;
-}
-
-.portfolio-topbar-inner {
-  max-width: 780px;
-  margin: 0 auto;
-}
-
-.portfolio-header-brand {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #2563eb;
-  letter-spacing: -0.02em;
-}
-
-.portfolio-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 18px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  background-color: #2563eb;
-  color: #ffffff;
-  transition: opacity 0.2s ease;
-}
-
-.portfolio-action:hover {
-  opacity: 0.9;
-}
-
-/* Profile hero section */
 
 .aboutUser {
   padding: 36px 20px 20px;
@@ -80,8 +34,6 @@
   color: #ffffff !important;
   transform: translateY(-2px);
 }
-
-/* Stats row */
 
 .portfolio-stat-grid {
   display: flex;
@@ -124,8 +76,6 @@
   letter-spacing: 0.04em;
 }
 
-/* Content panels */
-
 .portfolio-panel {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
@@ -146,8 +96,6 @@
   padding-bottom: 8px;
   border-bottom: 1px solid #f1f5f9;
 }
-
-/* Experience / Education timeline */
 
 .timeline-list {
   display: flex;
@@ -206,8 +154,6 @@
   font-weight: 500;
 }
 
-/* Skills progress bars and tech stack */
-
 .portfolio-skill-card {
   display: flex;
   flex-direction: column;
@@ -248,8 +194,6 @@
   padding: 6px 12px;
   border-radius: 6px;
 }
-
-/* Project and service cards */
 
 .portfolio-card-item {
   border: 1px solid #e2e8f0;

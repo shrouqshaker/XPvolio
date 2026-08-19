@@ -1,9 +1,3 @@
-/* ==========================================================================
-   editor.js — Form rendering and data binding for each CV section
-   ========================================================================== */
-
-/* ── Section Metadata ─────────────────────────────────────────────────────── */
-
 var SECTION_INFO = {
   personalInfo:    { title: "Personal Info",               subtitle: "Basic contact details and professional links." },
   summary:         { title: "Professional Summary",        subtitle: "Highlight your key skills and background in a few sentences." },
@@ -18,12 +12,10 @@ var SECTION_INFO = {
   awards:          { title: "Honors & Awards",             subtitle: "Key achievements, honors, and recognitions." },
   volunteer:       { title: "Volunteer Work",              subtitle: "Community involvement and volunteer experience." },
   organizations:   { title: "Organizations",               subtitle: "Professional associations and affiliations." },
-  regionalDetails: { title: "Regional & Personal Details", subtitle: "Optional market details like birthdate and military status." },
+  regionalDetails: { title: "Regional & Personal Details", subtitle: "Optional details like birthdate and military status." },
   references:      { title: "References",                  subtitle: "Professional references or request status." },
   customization:   { title: "Document Customization",      subtitle: "Adjust styling, primary color, and fonts." }
 };
-
-/* ── Default item templates for each array section ────────────────────────── */
 
 var ITEM_DEFAULTS = {
   experience:     { jobTitle: "", company: "", startDate: "", endDate: "", currentlyWorking: false, description: "" },
@@ -41,19 +33,95 @@ var ITEM_DEFAULTS = {
 
 var currentActiveSection = "personalInfo";
 
-/* ── Escape helpers ───────────────────────────────────────────────────────── */
+/* ── Regex Validation Patterns & Engine ────────────────────────────────── */
+
+var REGEX_RULES = {
+  email: {
+    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    message: "Please enter a valid email address (e.g. name@domain.com)"
+  },
+  phone: {
+    pattern: /^(\+?\d{1,3}[-.\s]?)?(\(?\d{2,4}\)?[-.\s]?)?\d{3,4}[-.\s]?\d{3,4}$/,
+    message: "Please enter a valid phone number (e.g. +201012345678 or 01012345678)"
+  },
+  url: {
+    pattern: /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/i,
+    message: "Please enter a valid URL (e.g. https://yourwebsite.com)"
+  },
+  linkedin: {
+    pattern: /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$|^[a-zA-Z0-9_-]+$/,
+    message: "Enter a valid LinkedIn username or URL (e.g. linkedin.com/in/username)"
+  },
+  github: {
+    pattern: /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+\/?$|^[a-zA-Z0-9_-]+$/,
+    message: "Enter a valid GitHub username or URL (e.g. github.com/username)"
+  },
+  behance: {
+    pattern: /^(https?:\/\/)?(www\.)?behance\.net\/[a-zA-Z0-9_-]+\/?$|^[a-zA-Z0-9_-]+$/,
+    message: "Enter a valid Behance username or URL (e.g. behance.net/username)"
+  },
+  date: {
+    pattern: /^(\d{4}|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{4}\b|\bPresent\b)$/i,
+    message: "Format as Year (e.g. 2023) or Month Year (e.g. Mar 2022) or 'Present'"
+  },
+  dob: {
+    pattern: /^\d{4}-\d{2}-\d{2}$/,
+    message: "Date of Birth format must be YYYY-MM-DD"
+  },
+  gpa: {
+    pattern: /^([0-4](\.\d{1,2})?(\s*\/\s*4(\.0)?)?|[0-5](\.\d{1,2})?(\s*\/\s*5(\.0)?)?|100(\.0)?|\d{1,2}(\.\d{1,2})?%)$/,
+    message: "Enter a valid GPA (e.g. 3.8, 3.8/4.0, or 85%)"
+  }
+};
+
+function validateField(inputEl) {
+  var ruleKey = inputEl.getAttribute("data-validate");
+  if (!ruleKey || !REGEX_RULES[ruleKey]) return true;
+
+  var val = inputEl.value.trim();
+  var feedbackEl = inputEl.parentNode.querySelector(".validation-feedback");
+
+  /* Empty optional fields are valid */
+  if (val === "") {
+    inputEl.classList.remove("is-invalid", "is-valid");
+    if (feedbackEl) feedbackEl.textContent = "";
+    return true;
+  }
+
+  var rule = REGEX_RULES[ruleKey];
+  var isValid = rule.pattern.test(val);
+
+  if (!isValid) {
+    inputEl.classList.add("is-invalid");
+    inputEl.classList.remove("is-valid");
+    if (!feedbackEl) {
+      feedbackEl = document.createElement("div");
+      feedbackEl.className = "validation-feedback text-danger small mt-1";
+      inputEl.parentNode.appendChild(feedbackEl);
+    }
+    feedbackEl.textContent = rule.message;
+  } else {
+    inputEl.classList.remove("is-invalid");
+    inputEl.classList.add("is-valid");
+    if (feedbackEl) {
+      feedbackEl.textContent = "";
+    }
+  }
+
+  return isValid;
+}
+
+/* ── Escape & DOM Helpers ──────────────────────────────────────────────── */
 
 function escapeAttr(str) {
   if (str === null || str === undefined) return "";
   return String(str).replace(/"/g, "&quot;");
 }
 
-/* ── Shared HTML building blocks ──────────────────────────────────────────── */
-
 function itemHeader(label, section, index) {
   return (
     '<div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom">' +
-      '<span class="fw-bold text-dark">' + label + '</span>' +
+      '<span class="fw-bold text-dark">' + escapeAttr(label) + '</span>' +
       '<button class="btn btn-outline-danger btn-sm remove-item-btn" data-section="' + section + '" data-index="' + index + '">' +
         '<i class="fa-solid fa-trash me-1"></i> Remove' +
       '</button>' +
@@ -70,22 +138,23 @@ function addItemBtn(label, section) {
 }
 
 function field(label, inputHtml) {
-  return '<div class="col-md-6"><label class="form-label">' + label + '</label>' + inputHtml + '</div>';
+  return '<div class="col-md-6"><label class="form-label fw-semibold small text-secondary">' + label + '</label>' + inputHtml + '</div>';
 }
 
 function fieldFull(label, inputHtml) {
-  return '<div class="col-12"><label class="form-label">' + label + '</label>' + inputHtml + '</div>';
+  return '<div class="col-12"><label class="form-label fw-semibold small text-secondary">' + label + '</label>' + inputHtml + '</div>';
 }
 
-function textInput(attrs, value) {
-  return '<input type="text" class="form-control" ' + attrs + ' value="' + escapeAttr(value) + '">';
+function textInput(attrs, value, validateType) {
+  var vAttr = validateType ? ' data-validate="' + validateType + '"' : '';
+  return '<input type="text" class="form-control" ' + attrs + vAttr + ' value="' + escapeAttr(value) + '">';
 }
 
 function textareaInput(attrs, value, rows) {
   return '<textarea class="form-control" rows="' + (rows || 3) + '" ' + attrs + '>' + escapeAttr(value) + '</textarea>';
 }
 
-/* ── Section Renderers ────────────────────────────────────────────────────── */
+/* ── Section Renderers ─────────────────────────────────────────────────── */
 
 function renderPersonalInfoForm(p) {
   p = p || {};
@@ -95,18 +164,18 @@ function renderPersonalInfoForm(p) {
       '<div class="row g-3">' +
         fieldFull("Full Name", textInput('data-path="personalInfo.fullName"', p.fullName)) +
         fieldFull("Professional Title", textInput('data-path="personalInfo.professionalTitle"', p.professionalTitle)) +
-        field("Email", '<input type="email" class="form-control" data-path="personalInfo.email" value="' + escapeAttr(p.email) + '">') +
-        field("Phone", textInput('data-path="personalInfo.phone"', p.phone)) +
+        field("Email", '<input type="email" class="form-control" data-validate="email" data-path="personalInfo.email" value="' + escapeAttr(p.email) + '">') +
+        field("Phone", textInput('data-path="personalInfo.phone"', p.phone, "phone")) +
         fieldFull("Location / Address", textInput('data-path="personalInfo.address"', p.address)) +
       '</div>' +
     '</div>' +
     '<div class="form-card">' +
       '<h3 class="h6 fw-bold mb-3 text-secondary">Professional Links</h3>' +
       '<div class="row g-3">' +
-        field("LinkedIn", textInput('data-path="personalInfo.socialLinks.linkedin"', links.linkedin)) +
-        field("GitHub",   textInput('data-path="personalInfo.socialLinks.github"',   links.github)) +
-        field("Personal Website", textInput('data-path="personalInfo.socialLinks.website"', links.website)) +
-        field("Behance / Portfolio", textInput('data-path="personalInfo.socialLinks.behance"', links.behance)) +
+        field("LinkedIn", textInput('data-path="personalInfo.socialLinks.linkedin"', links.linkedin, "linkedin")) +
+        field("GitHub",   textInput('data-path="personalInfo.socialLinks.github"',   links.github, "github")) +
+        field("Personal Website", textInput('data-path="personalInfo.socialLinks.website"', links.website, "url")) +
+        field("Behance / Portfolio", textInput('data-path="personalInfo.socialLinks.behance"', links.behance, "behance")) +
       '</div>' +
     '</div>'
   );
@@ -116,7 +185,7 @@ function renderSummaryForm(summary) {
   return (
     '<div class="form-card">' +
       '<div class="mb-3">' +
-        '<label class="form-label">Professional Summary</label>' +
+        '<label class="form-label fw-semibold small text-secondary">Professional Summary</label>' +
         textareaInput('data-path="summary" placeholder="Write a summary of your professional background..."', summary || "", 5) +
       '</div>' +
     '</div>'
@@ -133,8 +202,8 @@ function renderExperienceForm(list) {
     html += '<div class="row g-3">';
     html += field("Job Title", textInput('data-arr="experience" data-idx="' + i + '" data-field="jobTitle"', exp.jobTitle));
     html += field("Company",   textInput('data-arr="experience" data-idx="' + i + '" data-field="company"',  exp.company));
-    html += field("Start Date", '<input type="text" class="form-control" placeholder="e.g. Mar 2021" data-arr="experience" data-idx="' + i + '" data-field="startDate" value="' + escapeAttr(exp.startDate) + '">');
-    html += field("End Date",   '<input type="text" class="form-control" placeholder="e.g. Present"  data-arr="experience" data-idx="' + i + '" data-field="endDate" value="' + escapeAttr(exp.endDate) + '"' + (exp.currentlyWorking ? " disabled" : "") + '>');
+    html += field("Start Date", textInput('data-arr="experience" data-idx="' + i + '" data-field="startDate" placeholder="e.g. Mar 2021"', exp.startDate, "date"));
+    html += field("End Date",   textInput('data-arr="experience" data-idx="' + i + '" data-field="endDate" placeholder="e.g. Present"' + (exp.currentlyWorking ? " disabled" : ""), exp.endDate, "date"));
     html += (
       '<div class="col-12">' +
         '<div class="form-check">' +
@@ -157,10 +226,10 @@ function renderEducationForm(list) {
     var edu = list[i];
     html += '<div class="item-card mb-3">' + itemHeader(edu.degree || "Degree", "education", i);
     html += '<div class="row g-3">';
-    html += field("Degree / Field of Study", textInput('data-arr="education" data-idx="' + i + '" data-field="degree"',          edu.degree));
-    html += field("Institution / School",    textInput('data-arr="education" data-idx="' + i + '" data-field="institution"',       edu.institution));
-    html += field("Graduation Date",         '<input type="text" class="form-control" placeholder="e.g. 2018" data-arr="education" data-idx="' + i + '" data-field="graduationDate" value="' + escapeAttr(edu.graduationDate) + '">');
-    html += field("GPA / Honors",            '<input type="text" class="form-control" placeholder="e.g. 3.8 / 4.0" data-arr="education" data-idx="' + i + '" data-field="gpa" value="' + escapeAttr(edu.gpa) + '">');
+    html += field("Degree / Field of Study", textInput('data-arr="education" data-idx="' + i + '" data-field="degree"', edu.degree));
+    html += field("Institution / School",    textInput('data-arr="education" data-idx="' + i + '" data-field="institution"', edu.institution));
+    html += field("Graduation Date",         textInput('data-arr="education" data-idx="' + i + '" data-field="graduationDate" placeholder="e.g. 2023"', edu.graduationDate, "date"));
+    html += field("GPA / Honors",            textInput('data-arr="education" data-idx="' + i + '" data-field="gpa" placeholder="e.g. 3.8 / 4.0"', edu.gpa, "gpa"));
     html += fieldFull("Description / Details", textareaInput('data-arr="education" data-idx="' + i + '" data-field="description"', edu.description, 2));
     html += '</div></div>';
   }
@@ -201,8 +270,8 @@ function renderProjectsForm(list) {
     html += '<div class="row g-3">';
     html += field("Project Name", textInput('data-arr="projects" data-idx="' + i + '" data-field="name"', proj.name));
     html += field("Role",         textInput('data-arr="projects" data-idx="' + i + '" data-field="role"', proj.role));
-    html += field("Start Date",   '<input type="text" class="form-control" placeholder="e.g. Jan 2023" data-arr="projects" data-idx="' + i + '" data-field="startDate" value="' + escapeAttr(proj.startDate) + '">');
-    html += field("End Date",     '<input type="text" class="form-control" placeholder="e.g. May 2023" data-arr="projects" data-idx="' + i + '" data-field="endDate" value="' + escapeAttr(proj.endDate) + '">');
+    html += field("Start Date",   textInput('data-arr="projects" data-idx="' + i + '" data-field="startDate" placeholder="e.g. Jan 2023"', proj.startDate, "date"));
+    html += field("End Date",     textInput('data-arr="projects" data-idx="' + i + '" data-field="endDate" placeholder="e.g. May 2023"', proj.endDate, "date"));
     html += fieldFull("Technologies Used (comma separated)", '<input type="text" class="form-control" placeholder="e.g. React, Node.js, PostgreSQL" data-arr="projects" data-idx="' + i + '" data-field="technologies" value="' + escapeAttr(techStr) + '">');
     html += fieldFull("Description", textareaInput('data-arr="projects" data-idx="' + i + '" data-field="description"', proj.description, 3));
     html += '</div></div>';
@@ -235,7 +304,7 @@ function renderCertificationsForm(list) {
     html += '<div class="row g-3">';
     html += field("Certification Name", textInput('data-arr="certifications" data-idx="' + i + '" data-field="name"', cert.name));
     html += field("Issuing Organization", textInput('data-arr="certifications" data-idx="' + i + '" data-field="organization"', cert.organization));
-    html += fieldFull("Issue Date / Year", '<input type="text" class="form-control" placeholder="e.g. 2023" data-arr="certifications" data-idx="' + i + '" data-field="issueDate" value="' + escapeAttr(cert.issueDate) + '">');
+    html += fieldFull("Issue Date / Year", textInput('data-arr="certifications" data-idx="' + i + '" data-field="issueDate" placeholder="e.g. 2023"', cert.issueDate, "date"));
     html += '</div></div>';
   }
   html += addItemBtn("Add Certification", "certifications");
@@ -293,10 +362,10 @@ function renderRegionalDetailsForm(r) {
         '<label class="form-check-label fw-bold text-dark" for="regEnable">Enable Personal / Regional Information Section</label>' +
       '</div>' +
       '<div class="row g-3">' +
-        field("Date of Birth",  textInput('data-path="regionalDetails.dateOfBirth"',  r.dateOfBirth)) +
+        field("Date of Birth",  textInput('data-path="regionalDetails.dateOfBirth" placeholder="YYYY-MM-DD"', r.dateOfBirth, "dob")) +
         field("Nationality",    textInput('data-path="regionalDetails.nationality"',   r.nationality)) +
         field("Marital Status", textInput('data-path="regionalDetails.maritalStatus"', r.maritalStatus)) +
-        '<div class="col-md-6"><label class="form-label">Military Status</label><select class="form-select" data-path="regionalDetails.militaryStatus">' + options + '</select></div>' +
+        '<div class="col-md-6"><label class="form-label fw-semibold small text-secondary">Military Status</label><select class="form-select" data-path="regionalDetails.militaryStatus">' + options + '</select></div>' +
       '</div>' +
     '</div>'
   );
@@ -325,11 +394,11 @@ function renderCustomizationForm(c) {
     '<div class="form-card">' +
       '<div class="row g-3">' +
         '<div class="col-md-6">' +
-          '<label class="form-label">Primary Theme Color</label>' +
+          '<label class="form-label fw-semibold small text-secondary">Primary Theme Color</label>' +
           '<input type="color" class="form-control form-control-color w-100" style="height:44px;" data-path="customization.primaryColor" value="' + escapeAttr(c.primaryColor || "#2563EB") + '">' +
         '</div>' +
         '<div class="col-md-6">' +
-          '<label class="form-label">Font Family</label>' +
+          '<label class="form-label fw-semibold small text-secondary">Font Family</label>' +
           '<select class="form-select" data-path="customization.font">' + fontOptions + '</select>' +
         '</div>' +
       '</div>' +
@@ -337,7 +406,7 @@ function renderCustomizationForm(c) {
   );
 }
 
-/* ── Main Section Renderer ────────────────────────────────────────────────── */
+/* ── Main Section Renderer ─────────────────────────────────────────────── */
 
 function renderEditorSection(sectionKey) {
   currentActiveSection = sectionKey;
@@ -378,15 +447,17 @@ function renderEditorSection(sectionKey) {
   container.innerHTML = html;
 }
 
-/* ── Event Delegation — single listener on the container ─────────────────── */
+/* ── Event Delegation & Listeners ──────────────────────────────────────── */
 
 document.addEventListener("DOMContentLoaded", function() {
   var container = document.getElementById("editorContent");
   if (!container) return;
 
-  /* Handle all input/change events via one delegated listener */
   container.addEventListener("input", function(e) {
     var el = e.target;
+
+    /* Execute Regex Validation */
+    validateField(el);
 
     if (el.hasAttribute("data-path")) {
       var path = el.getAttribute("data-path");
@@ -400,7 +471,6 @@ document.addEventListener("DOMContentLoaded", function() {
       var fieldName = el.getAttribute("data-field");
       var value     = el.type === "checkbox" ? el.checked : el.value;
 
-      /* If technologies, parse comma-separated string into array */
       if (fieldName === "technologies" && typeof value === "string") {
         value = value.split(",").map(function(s) { return s.trim(); }).filter(Boolean);
       }
@@ -413,7 +483,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  /* "change" needed for checkbox to fire immediately on toggle */
   container.addEventListener("change", function(e) {
     var el = e.target;
     if (el.type !== "checkbox") return;
@@ -438,44 +507,39 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  /* Remove item button */
   container.addEventListener("click", function(e) {
-    var btn = e.target.closest(".remove-item-btn");
-    if (!btn) return;
+    var removeBtn = e.target.closest(".remove-item-btn");
+    if (removeBtn) {
+      var section = removeBtn.getAttribute("data-section");
+      var index   = parseInt(removeBtn.getAttribute("data-index"), 10);
 
-    var section = btn.getAttribute("data-section");
-    var index   = parseInt(btn.getAttribute("data-index"), 10);
+      window.CVState.updateState(function(state) {
+        if (state[section]) {
+          state[section].splice(index, 1);
+        }
+      });
+      renderEditorSection(currentActiveSection);
+      return;
+    }
 
-    window.CVState.updateState(function(state) {
-      if (state[section]) {
-        state[section].splice(index, 1);
-      }
-    });
-    renderEditorSection(currentActiveSection);
-  });
+    var addBtn = e.target.closest(".add-item-btn");
+    if (addBtn) {
+      var sec = addBtn.getAttribute("data-section");
+      var defaults = ITEM_DEFAULTS[sec];
+      if (!defaults) return;
 
-  /* Add item button */
-  container.addEventListener("click", function(e) {
-    var btn = e.target.closest(".add-item-btn");
-    if (!btn) return;
-
-    var section = btn.getAttribute("data-section");
-    var defaults = ITEM_DEFAULTS[section];
-    if (!defaults) return;
-
-    window.CVState.updateState(function(state) {
-      if (!state[section]) state[section] = [];
-      var newItem = {};
-      for (var key in defaults) {
-        newItem[key] = Array.isArray(defaults[key]) ? [] : defaults[key];
-      }
-      state[section].push(newItem);
-    });
-    renderEditorSection(section);
+      window.CVState.updateState(function(state) {
+        if (!state[sec]) state[sec] = [];
+        var newItem = {};
+        for (var key in defaults) {
+          newItem[key] = Array.isArray(defaults[key]) ? [] : defaults[key];
+        }
+        state[sec].push(newItem);
+      });
+      renderEditorSection(sec);
+    }
   });
 });
-
-/* ── Init ─────────────────────────────────────────────────────────────────── */
 
 window.initEditor = function() {
   renderEditorSection("personalInfo");

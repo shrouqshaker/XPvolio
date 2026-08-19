@@ -1,21 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portfolio | XPvolio</title>
+  <title>Portfolio Preview | XPvolio</title>
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" href="css/portfolio.css">
+  
+  <style>
+    .portfolio-view-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1050;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 24px;
+    }
+    @media print {
+      .portfolio-view-topbar {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <div id="portfolio-root"></div>
+
+  <!-- Top Action Bar (Download & Actions) -->
+  <header class="portfolio-view-topbar d-flex align-items-center justify-content-between shadow-sm">
+    <div class="d-flex align-items-center gap-2">
+      <a href="editor.html" id="backToEditorLink" class="btn btn-outline-secondary btn-sm rounded-2 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Editor</span>
+      </a>
+      <span class="fw-bold text-dark fs-6 ms-2 d-none d-sm-inline">
+        <i class="fa-solid fa-globe text-primary me-1"></i> XPvolio Portfolio View
+      </span>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <button id="downloadPdfBtn" class="btn btn-primary btn-sm rounded-2 px-3 py-1 fw-semibold d-flex align-items-center gap-2">
+        <i class="fa-solid fa-download"></i>
+        <span>Download PDF</span>
+      </button>
+      <button onclick="window.print()" class="btn btn-outline-dark btn-sm rounded-2 px-3 py-1 fw-semibold d-flex align-items-center gap-2">
+        <i class="fa-solid fa-print"></i>
+        <span>Print</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Clean Portfolio Container -->
+  <main id="portfolio-root"></main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/state.js"></script>
   <script src="js/portfolio.js"></script>
+  <script src="js/pdf.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (typeof window.initPdfExport === "function") {
+        window.initPdfExport();
+      }
+
+      /* Update back link to preserve active document ID & view */
+      var docId = (window.CVState && typeof window.CVState.getActiveDocId === "function") 
+                    ? window.CVState.getActiveDocId() 
+                    : "default_doc";
+      var backLink = document.getElementById("backToEditorLink");
+      if (backLink) {
+        backLink.href = "editor.html?view=portfolio&docId=" + encodeURIComponent(docId);
+      }
+    });
+  </script>
 </body>
+
 </html>
