@@ -1,0 +1,59 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f7f9fb;
+  color: #191c1e;
+}
+
+.ambient-shadow {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.custom-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(195, 198, 215, 0.5);
+  border-radius: 0.75rem;
+  transition: border-color 0.2s ease;
+}
+
+.custom-card:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+.icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 0.5rem;
+  background-color: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.custom-card:hover .icon-box {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.map-pin {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.map-pin::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  width: 8px;
+  height: 8px;
+  background-color: #2563eb;
+  transform: rotate(45deg);
+}
