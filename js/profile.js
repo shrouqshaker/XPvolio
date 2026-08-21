@@ -240,10 +240,9 @@ function renderUserDocuments() {
 
 window.filterDocs = function (type, btn) {
   currentFilter = type;
-  var buttons = document.querySelectorAll(".filter-btn");
-  for (var i = 0; i < buttons.length; i++) {
-    buttons[i].classList.remove("active");
-  }
+  document.querySelectorAll(".filter-btn").forEach(function (b) {
+    b.classList.remove("active");
+  });
   if (btn) btn.classList.add("active");
   renderUserDocuments();
 };
@@ -252,84 +251,41 @@ window.promptCreateDoc = function (type) {
   var currentUser = getActiveUser();
   if (!currentUser) return;
 
-  var title = prompt("Enter a title for your new " + type + ":", "");
+  var title = prompt(`Enter a title for your new ${type}:`, "");
   if (!title || !title.trim()) return;
 
   var trimmedTitle = title.trim();
-  var docId = (type === "CV" ? "cv_" : "port_") + Date.now();
+  var isCV = type === "CV";
+  var docId = `${isCV ? "cv_" : "port_"}${Date.now()}`;
 
   var docs = getUserDocs(currentUser.email);
-  var newDoc = {
+  docs.unshift({
     id: docId,
     title: trimmedTitle,
     type: type,
     updatedAt: new Date().toLocaleDateString(),
-    atsScore: type === "CV" ? 0 : undefined,
-    isPublished: type === "Portfolio" ? true : undefined,
-  };
-
-  docs.unshift(newDoc);
+    atsScore: isCV ? 0 : undefined,
+    isPublished: isCV ? undefined : true,
+  });
   saveUserDocs(currentUser.email, docs);
 
-  var storageKey =
-    "xpvolio_state_" + currentUser.email.toLowerCase().trim() + "_" + docId;
-
-  var initialState;
-  if (window.CVState && typeof window.CVState.getDefaultState === "function") {
-    initialState = window.CVState.getDefaultState();
-    initialState.docId = docId;
-    initialState.docTitle = trimmedTitle;
-  } else {
-    initialState = {
-      docId: docId,
-      docTitle: trimmedTitle,
-      personalInfo: {
-        fullName: currentUser.name || "Your Name",
-        professionalTitle: "",
-        email: currentUser.email || "user@example.com",
-        phone: "",
-        address: "",
-        socialLinks: { linkedin: "", github: "", website: "", behance: "" },
-      },
-      summary: "",
-      experience: [],
-      education: [],
-      skills: [],
-      projects: [],
-      services: [],
-      certifications: [],
-      courses: [],
-      languages: [],
-      awards: [],
-      volunteer: [],
-      organizations: [],
-      regionalDetails: {
-        enabled: false,
-        dateOfBirth: "",
-        nationality: "",
-        maritalStatus: "",
-        militaryStatus: "Not Applicable",
-      },
-      references: { availableUponRequest: true },
-      customization: { primaryColor: "#004ac6", font: "Inter" },
-    };
-  }
-
+  var storageKey = `xpvolio_state_${currentUser.email.toLowerCase().trim()}_${docId}`;
+  var initialState = {
+    ...window.CVState.getDefaultState(),
+    docId: docId,
+    docTitle: trimmedTitle,
+  };
   localStorage.setItem(storageKey, JSON.stringify(initialState));
-  renderUserDocuments();
 
-  var targetView = type === "CV" ? "cv" : "portfolio";
-  window.location.href =
-    "editor.html?view=" +
-    targetView +
-    "&docId=" +
-    docId +
-    "&title=" +
-    encodeURIComponent(trimmedTitle);
+  window.location.href = `editor.html?view=${isCV ? "cv" : "portfolio"}&docId=${docId}&title=${encodeURIComponent(trimmedTitle)}`;
 };
 
 window.previewPortfolio = function (docId) {
-  window.location.href = "portfolio.html?docId=" + encodeURIComponent(docId);
+  window.open(`portfolio.html?docId=${encodeURIComponent(docId)}`, "_blank");
+};
+
+window.previewCv = function (docId) {
+  window.open(`cv.html?docId=${encodeURIComponent(docId)}`, "_blank");
 };
 
 window.duplicateDocument = function (docId) {
@@ -337,33 +293,24 @@ window.duplicateDocument = function (docId) {
   if (!currentUser) return;
 
   var docs = getUserDocs(currentUser.email);
-  var target = null;
-  for (var i = 0; i < docs.length; i++) {
-    if (docs[i].id === docId) {
-      target = docs[i];
-      break;
-    }
-  }
+  var target = docs.find(function (d) { return d.id === docId; });
   if (!target) return;
 
-  var newDocId = (target.type === "CV" ? "cv_" : "port_") + Date.now();
-  var duplicatedTitle = target.title + " (Copy)";
+  var isCV = target.type === "CV";
+  var newDocId = `${isCV ? "cv_" : "port_"}${Date.now()}`;
+  var duplicatedTitle = `${target.title} (Copy)`;
 
-  var duplicated = {
+  docs.unshift({
+    ...target,
     id: newDocId,
     title: duplicatedTitle,
-    type: target.type,
     updatedAt: new Date().toLocaleDateString(),
-    atsScore: target.atsScore,
-    isPublished: target.isPublished,
-  };
-
-  docs.unshift(duplicated);
+  });
   saveUserDocs(currentUser.email, docs);
 
   var emailClean = currentUser.email.toLowerCase().trim();
-  var oldKey = "xpvolio_state_" + emailClean + "_" + docId;
-  var newKey = "xpvolio_state_" + emailClean + "_" + newDocId;
+  var oldKey = `xpvolio_state_${emailClean}_${docId}`;
+  var newKey = `xpvolio_state_${emailClean}_${newDocId}`;
 
   try {
     var oldState = localStorage.getItem(oldKey);
@@ -387,18 +334,13 @@ window.deleteDocument = function (docId) {
   if (!currentUser) return;
 
   var docs = getUserDocs(currentUser.email);
-  var updatedDocs = [];
-  for (var i = 0; i < docs.length; i++) {
-    if (docs[i].id !== docId) {
-      updatedDocs.push(docs[i]);
-    }
-  }
-
+  var updatedDocs = docs.filter(function (doc) {
+    return doc.id !== docId;
+  });
   saveUserDocs(currentUser.email, updatedDocs);
 
-  var storageKey =
-    "xpvolio_state_" + currentUser.email.toLowerCase().trim() + "_" + docId;
-  localStorage.removeItem(storageKey);
+  var emailClean = currentUser.email.toLowerCase().trim();
+  localStorage.removeItem(`xpvolio_state_${emailClean}_${docId}`);
 
   renderUserDocuments();
 };
@@ -411,17 +353,19 @@ window.handleUpdateProfile = function (e) {
   var newNameInput = document.getElementById("editNameInput");
   var newPassInput = document.getElementById("editPasswordInput");
 
-  var newName = newNameInput ? newNameInput.value.trim() : "";
-  var newPass = newPassInput ? newPassInput.value : "";
+  var newName = newNameInput?.value.trim() || "";
+  var newPass = newPassInput?.value || "";
 
   if (!newName) return;
 
   window.Auth.updateUser(newName, newPass);
 
+  if (newPassInput) newPassInput.value = "";
+
   var modalEl = document.getElementById("editProfileModal");
   if (modalEl && typeof bootstrap !== "undefined") {
-    var modal = bootstrap.Modal.getInstance(modalEl);
-    if (modal) modal.hide();
+    var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.hide();
   }
 
   loadUserProfile();
