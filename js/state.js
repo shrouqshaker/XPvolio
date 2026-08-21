@@ -14,7 +14,6 @@ StateManager.prototype.isGuest = function () {
   return !(window.Auth && window.Auth.getCurrentUser());
 };
 
-/* Get storage driver: sessionStorage for guests, localStorage for registered users */
 StateManager.prototype.getStorage = function () {
   return this.isGuest() ? window.sessionStorage : window.localStorage;
 };
@@ -145,8 +144,6 @@ StateManager.prototype.saveState = function () {
   }, 250);
 };
 
-/* Force an immediate (non-debounced) save — useful right before navigating
-   away, where a pending debounce timer might otherwise be lost. */
 StateManager.prototype.flushSave = function () {
   if (this._saveTimer) {
     clearTimeout(this._saveTimer);

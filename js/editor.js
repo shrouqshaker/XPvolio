@@ -1,4 +1,3 @@
-
 function escapeHtml(str) {
   if (!str) return "";
   return String(str)
@@ -111,8 +110,6 @@ var ITEM_DEFAULTS = {
 
 var currentActiveSection = "personalInfo";
 
-/*Regex Validation Patterns & Engine  */
-
 var REGEX_RULES = {
   email: {
     pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
@@ -162,6 +159,48 @@ var REGEX_RULES = {
   },
 };
 
+function parseFlexibleDate(dateStr) {
+  if (!dateStr || typeof dateStr !== "string") return null;
+  var clean = dateStr.trim();
+  if (clean.toLowerCase() === "present") return new Date();
+
+  if (/^\d{4}$/.test(clean)) {
+    return new Date(parseInt(clean, 10), 0, 1);
+  }
+
+  var parsed = new Date(clean);
+  return isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function validateDateRange(containerCard) {
+  if (!containerCard) return true;
+
+  var startInput = containerCard.querySelector('input[data-field="startDate"]');
+  var endInput = containerCard.querySelector('input[data-field="endDate"]');
+
+  if (!startInput || !endInput) return true;
+
+  var startDate = parseFlexibleDate(startInput.value);
+  var endDate = parseFlexibleDate(endInput.value);
+
+  endInput.parentNode.querySelector(".date-range-feedback")?.remove();
+
+  if (startDate && endDate && endDate < startDate) {
+    endInput.classList.add("is-invalid");
+    endInput.classList.remove("is-valid");
+    endInput.insertAdjacentHTML(
+      "afterend",
+      '<div class="validation-feedback date-range-feedback text-danger small mt-1">End date cannot be earlier than start date.</div>'
+    );
+    return false;
+  } else {
+    if (endInput.classList.contains("is-invalid") && !endInput.parentNode.querySelector(".validation-feedback:not(.date-range-feedback)")) {
+      endInput.classList.remove("is-invalid");
+    }
+    return true;
+  }
+}
+
 function validateField(inputEl) {
   const rule = REGEX_RULES[inputEl.getAttribute("data-validate")];
   const val = inputEl.value.trim();
@@ -191,7 +230,6 @@ function validateField(inputEl) {
   return isValid;
 }
 
-/*  DOM Helpers  */
 function escapeAttr(str) {
   return str ? String(str).replaceAll('"', "&quot;") : "";
 }
@@ -228,6 +266,7 @@ function textInput(attrs, value, valType) {
 function textareaInput(attrs, value, rows = 3) {
   return `<textarea class="form-control" rows="${rows}" ${attrs}>${escapeHtml(value)}</textarea>`;
 }
+
 function renderPersonalInfoForm(p) {
   p = p || {};
   var links = p.socialLinks || {};
@@ -550,7 +589,6 @@ function renderCustomizationForm(c) {
     </div>
   `;
 }
-/* ── Main Section Renderer ─────────────────────────────────────────────── */
 
 function renderEditorSection(sectionKey) {
   currentActiveSection = sectionKey;
@@ -626,8 +664,6 @@ function renderEditorSection(sectionKey) {
   container.innerHTML = html;
 }
 
-/*  Event Delegation & Listeners  */
-
 document.addEventListener("DOMContentLoaded", function () {
   var container = document.getElementById("editorContent");
   if (!container) return;
@@ -640,6 +676,12 @@ document.addEventListener("DOMContentLoaded", function () {
     var el = e.target;
     validateField(el);
 
+    var fieldName = el.getAttribute("data-field");
+    if (fieldName === "startDate" || fieldName === "endDate") {
+      var itemCard = el.closest(".item-card");
+      validateDateRange(itemCard);
+    }
+
     if (el.hasAttribute("data-path")) {
       window.CVState.setState(
         el.getAttribute("data-path"),
@@ -650,7 +692,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (el.hasAttribute("data-arr")) {
       var arrName = el.getAttribute("data-arr");
       var idx = parseInt(el.getAttribute("data-idx"), 10);
-      var fieldName = el.getAttribute("data-field");
       var value = getElementValue(el);
 
       if (fieldName === "technologies" && typeof value === "string") {

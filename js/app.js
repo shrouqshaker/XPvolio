@@ -4,10 +4,15 @@ document.addEventListener("DOMContentLoaded", function () {
   var userNameEl = document.getElementById("userNameDisplay");
   var userPill = document.getElementById("userProfilePill");
   var signOutBtn = document.getElementById("signOutBtn");
+  var publishBtn = document.getElementById("publishBtn");
 
   if (currentUser) {
     if (userNameEl)
       userNameEl.textContent = currentUser.name || currentUser.email;
+
+    if (publishBtn) {
+      publishBtn.classList.remove("d-none");
+    }
   } else {
     if (userNameEl) userNameEl.textContent = "Guest Mode";
     if (userPill) {
@@ -23,6 +28,10 @@ document.addEventListener("DOMContentLoaded", function () {
       signOutBtn.onclick = function () {
         window.location.href = "login.html";
       };
+    }
+
+    if (publishBtn) {
+      publishBtn.classList.add("d-none");
     }
   }
 
@@ -95,35 +104,61 @@ document.addEventListener("DOMContentLoaded", function () {
   var urlParams = new URLSearchParams(window.location.search);
   switchPreviewView(urlParams.get("view") === "portfolio" ? "portfolio" : "cv");
 
-  var publishBtn = document.getElementById("publishBtn");
   if (publishBtn) {
     publishBtn.addEventListener("click", function () {
-      var activeDocId = window.CVState?.getActiveDocId() || "default_doc";
       var user = window.Auth ? window.Auth.getCurrentUser() : null;
 
-      if (user) {
-        var listKey = "xpvolio_docs_" + user.email.toLowerCase().trim();
-        try {
-          var docs = JSON.parse(localStorage.getItem(listKey)) || [];
-          var doc = null;
-          for (var i = 0; i < docs.length; i++) {
-            if (docs[i].id === activeDocId) {
-              doc = docs[i];
-              break;
-            }
-          }
-          if (doc) {
-            doc.isPublished = true;
-            localStorage.setItem(listKey, JSON.stringify(docs));
-          }
-        } catch (e) {
-          console.error("Publish error:", e);
-        }
+      var portWrapper = document.getElementById("portfolioPreviewWrapper");
+      var isPortfolio =
+        portWrapper && !portWrapper.classList.contains("d-none");
+      var docType = isPortfolio ? "Portfolio" : "CV";
+
+      var newDocId = (isPortfolio ? "port_" : "cv_") + Date.now();
+      var currentState = window.CVState
+        ? JSON.parse(JSON.stringify(window.CVState.getState()))
+        : {};
+
+      var defaultTitle = isPortfolio
+        ? "Web Developer Portfolio"
+        : "Software Engineer Resume";
+      var currentTitle = currentState.docTitle || defaultTitle;
+      var atsScore =
+        window.CVState && typeof window.CVState.calculateAtsScore === "function"
+          ? window.CVState.calculateAtsScore()
+          : 85;
+
+      currentState.docId = newDocId;
+      currentState.docTitle = currentTitle;
+
+      var emailClean = user.email.toLowerCase().trim();
+      var listKey = "xpvolio_docs_" + emailClean;
+      var newStorageKey = "xpvolio_state_" + emailClean + "_" + newDocId;
+
+      try {
+        localStorage.setItem(newStorageKey, JSON.stringify(currentState));
+
+        var docs = JSON.parse(localStorage.getItem(listKey)) || [];
+        docs.unshift({
+          id: newDocId,
+          title: currentTitle,
+          type: docType,
+          updatedAt: new Date().toLocaleDateString(),
+          isPublished: true,
+          atsScore: atsScore,
+        });
+        localStorage.setItem(listKey, JSON.stringify(docs));
+
+        var newUrl = `editor.html?view=${isPortfolio ? "portfolio" : "cv"}&docId=${encodeURIComponent(newDocId)}&title=${encodeURIComponent(currentTitle)}`;
+        window.history.replaceState(null, "", newUrl);
+      } catch (e) {
+        console.error("Save/Publish error:", e);
       }
 
-      alert("Your CV & Portfolio are published and live!");
+      alert(`Your new ${docType} has been saved successfully.`);
+
+      var targetPage = isPortfolio ? "portfolio.html" : "cv.html";
       window.open(
-        `portfolio.html?docId=${encodeURIComponent(activeDocId)}`,
+        `${targetPage}?docId=${encodeURIComponent(newDocId)}`,
         "_blank",
       );
     });

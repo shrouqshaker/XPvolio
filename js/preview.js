@@ -1,4 +1,3 @@
-/* HTML escaping helper — prevents XSS from user-entered data */
 function escapeHtml(str) {
   if (!str) return "";
   return String(str)
@@ -8,7 +7,6 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;");
 }
 
-/* Date formatting */
 function formatDates(start, end, isCurrent) {
   if (!start && !end) return "";
   if (isCurrent) return `${escapeHtml(start) || ""} – Present`;
@@ -16,7 +14,6 @@ function formatDates(start, end, isCurrent) {
   return escapeHtml(start) || escapeHtml(end) || "";
 }
 
-/* Section builder helpers */
 function cvSection(title, bodyHtml) {
   return `
     <div class="cv-section">
@@ -44,7 +41,6 @@ function skillTagList(items) {
   return `<div class="cv-skills-tags">${tags.join("")}</div>`;
 }
 
-/* Main render (Optimized & Short) */
 function renderCvPreview(state) {
   var paper = document.getElementById("cvPaper");
   if (!paper) return;
@@ -52,7 +48,6 @@ function renderCvPreview(state) {
   var p = state.personalInfo || {};
   var links = p.socialLinks || {};
 
-  /* Build contact line dynamically using map & filter */
   var contactValues = [
     p.address,
     p.email,
@@ -63,7 +58,7 @@ function renderCvPreview(state) {
     links.behance,
   ];
   var contactHtml = contactValues
-    .filter(Boolean) // بيشيل أي قيمة فاضية أو null تلقائياً
+    .filter(Boolean)
     .map((item) => `<span class="cv-contact-item">${escapeHtml(item)}</span>`)
     .join(' <span class="cv-contact-sep">|</span> ');
 
@@ -76,7 +71,6 @@ function renderCvPreview(state) {
     <hr class="cv-divider">
   `;
 
-  /* Summary */
   if (state.summary?.trim()) {
     html += cvSection(
       "PROFESSIONAL SUMMARY",
@@ -84,7 +78,6 @@ function renderCvPreview(state) {
     );
   }
 
-  /* Experience */
   if (state.experience?.length) {
     var expHtml = state.experience
       .map((exp) => {
@@ -105,7 +98,6 @@ function renderCvPreview(state) {
     html += cvSection("PROFESSIONAL EXPERIENCE", expHtml);
   }
 
-  /* Education */
   if (state.education?.length) {
     var eduHtml = state.education
       .map((edu) => {
@@ -125,7 +117,6 @@ function renderCvPreview(state) {
     html += cvSection("EDUCATION", eduHtml);
   }
 
-  /* Skills */
   if (state.skills?.length) {
     var tags = state.skills.map((sk) =>
       sk.level
@@ -135,7 +126,6 @@ function renderCvPreview(state) {
     html += cvSection("SKILLS & EXPERTISE", skillTagList(tags));
   }
 
-  /* Projects */
   if (state.projects?.length) {
     var projHtml = state.projects
       .map((proj) => {
@@ -171,7 +161,6 @@ function renderCvPreview(state) {
     html += cvSection("KEY PROJECTS", projHtml);
   }
 
-  /* Services */
   if (state.services?.length) {
     var srvHtml = state.services
       .map((srv) =>
@@ -186,7 +175,6 @@ function renderCvPreview(state) {
     html += cvSection("SERVICES OFFERED", srvHtml);
   }
 
-  /* ── الأقسام المتشابهة (Courses, Awards, Volunteer, Organizations, Certifications) ── */
   var simpleListSections = [
     {
       key: "certifications",
@@ -215,7 +203,6 @@ function renderCvPreview(state) {
     }
   });
 
-  /* Languages */
   if (state.languages?.length) {
     var langTags = state.languages.map(
       (lang) =>
@@ -224,7 +211,6 @@ function renderCvPreview(state) {
     html += cvSection("LANGUAGES", skillTagList(langTags));
   }
 
-  /* Regional / Personal Details */
   if (state.regionalDetails?.enabled) {
     var r = state.regionalDetails;
     var fields = [
@@ -252,7 +238,6 @@ function renderCvPreview(state) {
     }
   }
 
-  /* References */
   if (state.references?.availableUponRequest) {
     html += cvSection(
       "REFERENCES",
@@ -262,7 +247,6 @@ function renderCvPreview(state) {
 
   paper.innerHTML = html;
 
-  /* Apply customization */
   var c = state.customization;
   if (c) {
     if (c.primaryColor) {

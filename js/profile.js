@@ -69,7 +69,6 @@ function renderUserDocuments() {
 
   var docs = getUserDocs(currentUser.email);
 
-  /* Compute Stats */
   var cvCount = 0;
   var portfolioCount = 0;
   var totalAts = 0;
@@ -94,7 +93,6 @@ function renderUserDocuments() {
       cvCount > 0 ? Math.round(totalAts / cvCount) + "%" : "--";
   }
 
-  /* Filter docs */
   var filteredDocs = [];
   for (var j = 0; j < docs.length; j++) {
     if (currentFilter === "ALL" || docs[j].type === currentFilter) {
