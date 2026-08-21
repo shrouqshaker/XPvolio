@@ -1,12 +1,3 @@
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
 var currentFilter = "ALL";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -102,103 +93,149 @@ function renderUserDocuments() {
 
   var container = document.getElementById("documentsListContainer");
   if (!container) return;
+  container.innerHTML = "";
 
   if (filteredDocs.length === 0) {
     var filterLabel =
-      currentFilter === "ALL" ? "resumes or portfolios" : currentFilter + "s";
-    container.innerHTML = [
-      '<div class="col-12 text-center py-5">',
-      '<div class="p-3 bg-light rounded-circle d-inline-flex mb-3">',
-      '<i class="fa-regular fa-folder-open fs-2 text-muted"></i>',
-      "</div>",
-      '<h3 class="h6 fw-bold text-dark mb-1">No ' + filterLabel + " yet</h3>",
-      '<p class="text-secondary small mb-3">You haven\'t created any documents yet. Start crafting your first one!</p>',
-      '<div class="d-flex justify-content-center gap-2">',
-      '<button onclick="promptCreateDoc(\'CV\')" class="btn btn-sm btn-primary-custom px-3 rounded-2">',
-      '<i class="fa-solid fa-plus me-1"></i> Create Resume (CV)',
-      "</button>",
-      '<button onclick="promptCreateDoc(\'Portfolio\')" class="btn btn-sm btn-outline-primary px-3 rounded-2">',
-      '<i class="fa-solid fa-plus me-1"></i> Create Portfolio',
-      "</button>",
-      "</div>",
-      "</div>",
-    ].join("");
+      currentFilter === "ALL" ? "resumes or portfolios" : `${currentFilter}s`;
+
+    var showCV = currentFilter === "ALL" || currentFilter === "CV";
+    var showPortfolio =
+      currentFilter === "ALL" || currentFilter === "Portfolio";
+
+    container.innerHTML = `
+      <div class="col-12 text-center py-5">
+        <div class="p-3 bg-light rounded-circle d-inline-flex mb-3">
+          <i class="fa-regular fa-folder-open fs-2 text-muted"></i>
+        </div>
+        <h3 class="h6 fw-bold text-dark mb-1">No ${filterLabel} yet</h3>
+        <p class="text-secondary small mb-3">You haven't created any documents yet. Start crafting your first one!</p>
+        <div class="d-flex justify-content-center gap-2">
+          ${
+            showCV
+              ? `<button onclick="promptCreateDoc('CV')" class="btn btn-sm btn-primary-custom px-3 rounded-2">
+                  <i class="fa-solid fa-plus me-1"></i> Create Resume (CV)
+                </button>`
+              : ""
+          }
+          ${
+            showPortfolio
+              ? `<button onclick="promptCreateDoc('Portfolio')" class="btn btn-sm btn-outline-primary px-3 rounded-2">
+                  <i class="fa-solid fa-plus me-1"></i> Create Portfolio
+                </button>`
+              : ""
+          }
+        </div>
+      </div>
+    `;
     return;
   }
 
-  var html = "";
-  for (var k = 0; k < filteredDocs.length; k++) {
-    var doc = filteredDocs[k];
+  filteredDocs.forEach(function (doc) {
     var isCV = doc.type === "CV";
-    var safeTitle = escapeHtml(doc.title);
+    var encodedId = encodeURIComponent(doc.id);
 
-    var typeBadge = isCV
-      ? '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-1 small"><i class="fa-solid fa-id-card me-1"></i> Resume (CV)</span>'
-      : '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-1 small"><i class="fa-solid fa-globe me-1"></i> Live Portfolio</span>';
+    var col = document.createElement("div");
+    col.className = "col-12 col-md-6";
 
-    var statusBadge = isCV
-      ? '<span class="small fw-semibold text-success"><i class="fa-solid fa-circle-check"></i> ATS ' +
-        (doc.atsScore || 0) +
-        "%</span>"
-      : '<span class="small fw-semibold text-primary"><i class="fa-solid fa-signal"></i> ' +
-        (doc.isPublished ? "Live Online" : "Draft") +
-        "</span>";
+    var docCard = document.createElement("div");
+    docCard.className =
+      "doc-card p-3 h-100 d-flex flex-column justify-content-between";
 
-    var editUrl = isCV
-      ? "editor.html?view=cv&docId=" + encodeURIComponent(doc.id)
-      : "editor.html?view=portfolio&docId=" + encodeURIComponent(doc.id);
+    var topSection = document.createElement("div");
 
-    html += [
-      '<div class="col-12 col-md-6">',
-      '<div class="doc-card p-3 h-100 d-flex flex-column justify-content-between">',
-      "<div>",
-      '<div class="d-flex align-items-center justify-content-between mb-2">',
-      typeBadge,
-      statusBadge,
-      "</div>",
-      '<h3 class="h6 fw-bold text-dark mb-1 text-truncate" title="' +
-        safeTitle +
-        '">' +
-        safeTitle +
-        "</h3>",
-      '<p class="small text-secondary mb-3">Last modified: ' +
-        escapeHtml(doc.updatedAt || "") +
-        "</p>",
-      "</div>",
-      '<div class="d-flex align-items-center justify-content-between pt-2 border-top gap-2">',
-      '<div class="d-flex gap-2">',
-      '<a href="' +
-        editUrl +
-        '" class="btn btn-sm btn-primary-custom px-3 rounded-2">',
-      '<i class="fa-solid fa-pen-to-square me-1"></i> Edit',
-      "</a>",
-      isCV
-        ? '<a href="cv.html?docId=' +
-          encodeURIComponent(doc.id) +
-          '" target="_blank" class="btn btn-sm btn-outline-primary px-2 rounded-2" title="Open Full CV"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>'
-        : '<a href="portfolio.html?docId=' +
-          encodeURIComponent(doc.id) +
-          '" target="_blank" class="btn btn-sm btn-outline-success px-2 rounded-2" title="Open Live Portfolio"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>',
-      "</div>",
-      '<div class="d-flex gap-1">',
-      "<button onclick=\"duplicateDocument('" +
-        doc.id +
-        '\')" class="btn btn-sm btn-light border text-secondary" title="Duplicate">',
-      '<i class="fa-regular fa-copy"></i>',
-      "</button>",
-      "<button onclick=\"deleteDocument('" +
-        doc.id +
-        '\')" class="btn btn-sm btn-light border text-danger" title="Delete">',
-      '<i class="fa-regular fa-trash-can"></i>',
-      "</button>",
-      "</div>",
-      "</div>",
-      "</div>",
-      "</div>",
-    ].join("");
-  }
+    var badgesRow = document.createElement("div");
+    badgesRow.className =
+      "d-flex align-items-center justify-content-between mb-2";
 
-  container.innerHTML = html;
+    var typeBadge = document.createElement("span");
+    if (isCV) {
+      typeBadge.className =
+        "badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-1 small";
+      typeBadge.innerHTML =
+        '<i class="fa-solid fa-id-card me-1"></i> Resume (CV)';
+    } else {
+      typeBadge.className =
+        "badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-1 small";
+      typeBadge.innerHTML =
+        '<i class="fa-solid fa-globe me-1"></i> Live Portfolio';
+    }
+
+    var statusBadge = document.createElement("span");
+    statusBadge.className = isCV
+      ? "small fw-semibold text-success"
+      : "small fw-semibold text-primary";
+    statusBadge.innerHTML = isCV
+      ? `<i class="fa-solid fa-circle-check"></i> ATS ${doc.atsScore}%`
+      : `<i class="fa-solid fa-signal"></i> ${doc.isPublished ? "Live Online" : "Draft"}`;
+
+    badgesRow.appendChild(typeBadge);
+    badgesRow.appendChild(statusBadge);
+
+    var titleEl = document.createElement("h3");
+    titleEl.className = "h6 fw-bold text-dark mb-1 text-truncate";
+    titleEl.textContent = doc.title || "Untitled";
+    titleEl.title = doc.title || "Untitled";
+
+    var lastModifiedEl = document.createElement("p");
+    lastModifiedEl.className = "small text-secondary mb-3";
+    lastModifiedEl.textContent = "Last modified: " + (doc.updatedAt || "");
+
+    topSection.appendChild(badgesRow);
+    topSection.appendChild(titleEl);
+    topSection.appendChild(lastModifiedEl);
+
+    var bottomSection = document.createElement("div");
+    bottomSection.className =
+      "d-flex align-items-center justify-content-between pt-2 border-top gap-2";
+
+    var leftButtons = document.createElement("div");
+    leftButtons.className = "d-flex gap-2";
+
+    var editUrl = `editor.html?view=${isCV ? "cv" : "portfolio"}&docId=${encodedId}`;
+    var viewUrl = isCV
+      ? `cv.html?docId=${encodedId}`
+      : `portfolio.html?docId=${encodedId}`;
+
+    leftButtons.innerHTML = `
+      <a href="${editUrl}" class="btn btn-sm btn-primary-custom px-3 rounded-2">
+        <i class="fa-solid fa-pen-to-square me-1"></i> Edit
+      </a>
+      <a href="${viewUrl}" target="_blank" class="btn btn-sm ${isCV ? "btn-outline-primary" : "btn-outline-success"} px-2 rounded-2" title="${isCV ? "Open Full CV" : "Open Live Portfolio"}">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      </a>
+    `;
+
+    var rightButtons = document.createElement("div");
+    rightButtons.className = "d-flex gap-1";
+
+    var duplicateBtn = document.createElement("button");
+    duplicateBtn.className = "btn btn-sm btn-light border text-secondary";
+    duplicateBtn.title = "Duplicate";
+    duplicateBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+    duplicateBtn.onclick = function () {
+      duplicateDocument(doc.id);
+    };
+
+    var deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn btn-sm btn-light border text-danger";
+    deleteBtn.title = "Delete";
+    deleteBtn.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
+    deleteBtn.onclick = function () {
+      deleteDocument(doc.id);
+    };
+
+    rightButtons.appendChild(duplicateBtn);
+    rightButtons.appendChild(deleteBtn);
+
+    bottomSection.appendChild(leftButtons);
+    bottomSection.appendChild(rightButtons);
+
+    docCard.appendChild(topSection);
+    docCard.appendChild(bottomSection);
+    col.appendChild(docCard);
+    container.appendChild(col);
+  });
 }
 
 window.filterDocs = function (type, btn) {
