@@ -76,7 +76,7 @@ function renderUserDocuments() {
   for (var i = 0; i < docs.length; i++) {
     if (docs[i].type === "CV") {
       cvCount++;
-      totalAts += docs[i].atsScore || 85;
+      totalAts += docs[i].atsScore || 0;
     } else if (docs[i].type === "Portfolio") {
       portfolioCount++;
     }
@@ -138,7 +138,7 @@ function renderUserDocuments() {
 
     var statusBadge = isCV
       ? '<span class="small fw-semibold text-success"><i class="fa-solid fa-circle-check"></i> ATS ' +
-        (doc.atsScore || 85) +
+        (doc.atsScore || 0) +
         "%</span>"
       : '<span class="small fw-semibold text-primary"><i class="fa-solid fa-signal"></i> ' +
         (doc.isPublished ? "Live Online" : "Draft") +
@@ -215,9 +215,7 @@ window.promptCreateDoc = function (type) {
   var currentUser = getActiveUser();
   if (!currentUser) return;
 
-  var defaultTitle =
-    type === "CV" ? "Software Engineer Resume" : "Web Developer Portfolio";
-  var title = prompt("Enter a title for your new " + type + ":", defaultTitle);
+  var title = prompt("Enter a title for your new " + type + ":", "");
   if (!title || !title.trim()) return;
 
   var trimmedTitle = title.trim();
@@ -229,7 +227,7 @@ window.promptCreateDoc = function (type) {
     title: trimmedTitle,
     type: type,
     updatedAt: new Date().toLocaleDateString(),
-    atsScore: type === "CV" ? 88 : undefined,
+    atsScore: type === "CV" ? 0 : undefined,
     isPublished: type === "Portfolio" ? true : undefined,
   };
 
