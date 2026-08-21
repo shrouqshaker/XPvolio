@@ -74,8 +74,6 @@ body {
 .doc-title-input {
   outline: none;
   width: auto;
-  min-width: 50px;
-  max-width: 320px;
 }
 
 .view-switch-pill {
