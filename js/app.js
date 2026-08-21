@@ -113,12 +113,6 @@ document.addEventListener("DOMContentLoaded", function () {
   publishBtn?.addEventListener("click", handlePublish);
 
   function handlePublish() {
-    if (!currentUser?.email) {
-      alert("Please sign in before publishing.");
-      window.location.href = "login.html";
-      return;
-    }
-
     var isPortfolio = portfolioWrapper && !portfolioWrapper.classList.contains("d-none");
     var docType = isPortfolio ? "Portfolio" : "CV";
 
