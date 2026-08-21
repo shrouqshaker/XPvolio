@@ -40,59 +40,6 @@ AuthManager.prototype.saveSession = function (user) {
   }
 };
 
-AuthManager.prototype.migrateGuestSession = function (email, userName) {
-  try {
-    email = email.toLowerCase().trim();
-    var docListKey = "xpvolio_docs_" + email;
-    var userDocs = JSON.parse(localStorage.getItem(docListKey)) || [];
-
-    for (var i = 0; i < sessionStorage.length; i++) {
-      var key = sessionStorage.key(i);
-      if (key && key.indexOf("xpvolio_guest_state_") === 0) {
-        var rawData = sessionStorage.getItem(key);
-        if (rawData) {
-          var stateObj = JSON.parse(rawData);
-          var docId = stateObj.docId || "doc_" + Date.now();
-
-          if (stateObj.personalInfo) {
-            if (
-              !stateObj.personalInfo.fullName ||
-              stateObj.personalInfo.fullName === "Your Name"
-            ) {
-              stateObj.personalInfo.fullName = userName;
-            }
-            if (
-              !stateObj.personalInfo.email ||
-              stateObj.personalInfo.email === "user@example.com"
-            ) {
-              stateObj.personalInfo.email = email;
-            }
-          }
-
-          var targetKey = "xpvolio_state_" + email + "_" + docId;
-          localStorage.setItem(targetKey, JSON.stringify(stateObj));
-
-          var exists = userDocs.some((doc) => doc.id === docId);
-          if (!exists) {
-            userDocs.unshift({
-              id: docId,
-              title: stateObj.docTitle || "My Resume",
-              type: "CV",
-              updatedAt: new Date().toLocaleDateString(),
-              atsScore: 85,
-            });
-          }
-        }
-      }
-    }
-
-    localStorage.setItem(docListKey, JSON.stringify(userDocs));
-    sessionStorage.clear();
-  } catch (e) {
-    console.error("Migration error:", e);
-  }
-};
-
 AuthManager.prototype.register = function (name, email, password) {
   email = email.trim().toLowerCase();
 
@@ -167,7 +114,7 @@ AuthManager.prototype.updateUser = function (newName, newPassword) {
 AuthManager.prototype.logout = function () {
   this.saveSession(null);
   sessionStorage.clear();
-  window.location.href = "login.html";
+  window.location.href = "index.html";
 };
 
 AuthManager.prototype.requireAuth = function () {
@@ -208,6 +155,59 @@ AuthManager.prototype.updateNavbar = function () {
         </button>
       </div>
     `;
+  }
+};
+
+AuthManager.prototype.migrateGuestSession = function (email, userName) {
+  try {
+    email = email.toLowerCase().trim();
+    var docListKey = "xpvolio_docs_" + email;
+    var userDocs = JSON.parse(localStorage.getItem(docListKey)) || [];
+
+    for (var i = 0; i < sessionStorage.length; i++) {
+      var key = sessionStorage.key(i);
+      if (key && key.indexOf("xpvolio_guest_state_") === 0) {
+        var rawData = sessionStorage.getItem(key);
+        if (rawData) {
+          var stateObj = JSON.parse(rawData);
+          var docId = stateObj.docId || "doc_" + Date.now();
+
+          if (stateObj.personalInfo) {
+            if (
+              !stateObj.personalInfo.fullName ||
+              stateObj.personalInfo.fullName === "Your Name"
+            ) {
+              stateObj.personalInfo.fullName = userName;
+            }
+            if (
+              !stateObj.personalInfo.email ||
+              stateObj.personalInfo.email === "user@example.com"
+            ) {
+              stateObj.personalInfo.email = email;
+            }
+          }
+
+          var targetKey = "xpvolio_state_" + email + "_" + docId;
+          localStorage.setItem(targetKey, JSON.stringify(stateObj));
+
+          var exists = userDocs.some((doc) => doc.id === docId);
+          if (!exists) {
+            userDocs.unshift({
+              id: docId,
+              title: stateObj.docTitle || "My Resume",
+              type: "CV",
+              updatedAt: new Date().toLocaleDateString(),
+              atsScore: 85,
+            });
+          }
+        }
+      }
+    }
+
+    localStorage.setItem(docListKey, JSON.stringify(userDocs));
+    sessionStorage.clear();
+  } catch (e) {
+    console.error("Migration error:", e);
   }
 };
 
