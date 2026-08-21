@@ -43,13 +43,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  /* 3. Initialize All Modules */
   window.initAtsGauge?.();
   window.initCvPreview?.();
   window.initEditor?.();
   window.initPdfExport?.();
 
-  /* 4. Sidebar Navigation */
   var navItems = document.querySelectorAll(".sidebar-panel .nav-link");
   navItems.forEach(function (item) {
     item.addEventListener("click", function () {
@@ -59,7 +57,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  /* 5. CV vs. Portfolio View Switcher */
   function setActiveViewBtn(btn, isActive) {
     if (btn) btn.classList.toggle("active", isActive);
   }

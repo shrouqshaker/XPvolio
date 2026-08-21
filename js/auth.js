@@ -1,7 +1,6 @@
 var USERS_KEY = "xpvolio_registered_users";
 var SESSION_KEY = "xpvolio_active_session";
 
-/* Shared localStorage helper */
 function loadFromStorage(key, fallback) {
   try {
     var data = localStorage.getItem(key);
@@ -19,7 +18,6 @@ function saveToStorage(key, value) {
   }
 }
 
-/* Auth Manager */
 function AuthManager() {
   this.users = loadFromStorage(USERS_KEY, {});
   this.session = loadFromStorage(SESSION_KEY, null);
@@ -42,7 +40,6 @@ AuthManager.prototype.saveSession = function (user) {
   }
 };
 
-/* Migrate guest documents into user's account */
 AuthManager.prototype.migrateGuestSession = function (email, userName) {
   try {
     email = email.toLowerCase().trim();
