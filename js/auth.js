@@ -60,7 +60,10 @@ AuthManager.prototype.register = function (name, email, password) {
   this.users[email] = newUser;
   saveToStorage(USERS_KEY, this.users);
   this.saveSession({ name: newUser.name, email: newUser.email });
-  this.migrateGuestSession(newUser.email, newUser.name);
+
+  var docListKey = "xpvolio_docs_" + email;
+  saveToStorage(docListKey, []);
+  sessionStorage.clear();
 
   return { success: true, user: newUser };
 };
@@ -78,8 +81,6 @@ AuthManager.prototype.login = function (email, password) {
     return { success: false, message: "Incorrect password. Please try again." };
 
   this.saveSession({ name: user.name, email: user.email });
-  this.migrateGuestSession(user.email, user.name);
-
   return { success: true, user: user };
 };
 
@@ -129,15 +130,29 @@ AuthManager.prototype.requireAuth = function () {
 AuthManager.prototype.updateNavbar = function () {
   var user = this.getCurrentUser();
   var navList = document.querySelector(".navbar-nav");
+
+  var ctaBtn =
+    document.getElementById("aboutCtaBtn") ||
+    document.querySelector("main a[href='editor.html']");
+
+  if (!user) {
+    if (ctaBtn) {
+      ctaBtn.href = "editor.html";
+      ctaBtn.textContent = "Get Started Free";
+    }
+    return;
+  }
+
+  if (ctaBtn) {
+    ctaBtn.href = "profile.html";
+    ctaBtn.innerHTML =
+      '<i class="fa-solid fa-table-columns me-2"></i> Go to Dashboard';
+  }
+
   if (!navList) return;
 
   var signInBtn = navList.querySelector('a[href="login.html"]');
   var getStartedBtn = navList.querySelector('a[href="editor.html"]');
-
-  if (!user) {
-    if (getStartedBtn) getStartedBtn.href = "editor.html";
-    return;
-  }
 
   if (getStartedBtn && getStartedBtn.closest("li")) {
     getStartedBtn.closest("li").remove();
@@ -155,59 +170,6 @@ AuthManager.prototype.updateNavbar = function () {
         </button>
       </div>
     `;
-  }
-};
-
-AuthManager.prototype.migrateGuestSession = function (email, userName) {
-  try {
-    email = email.toLowerCase().trim();
-    var docListKey = "xpvolio_docs_" + email;
-    var userDocs = JSON.parse(localStorage.getItem(docListKey)) || [];
-
-    for (var i = 0; i < sessionStorage.length; i++) {
-      var key = sessionStorage.key(i);
-      if (key && key.indexOf("xpvolio_guest_state_") === 0) {
-        var rawData = sessionStorage.getItem(key);
-        if (rawData) {
-          var stateObj = JSON.parse(rawData);
-          var docId = stateObj.docId || "doc_" + Date.now();
-
-          if (stateObj.personalInfo) {
-            if (
-              !stateObj.personalInfo.fullName ||
-              stateObj.personalInfo.fullName === "Your Name"
-            ) {
-              stateObj.personalInfo.fullName = userName;
-            }
-            if (
-              !stateObj.personalInfo.email ||
-              stateObj.personalInfo.email === "user@example.com"
-            ) {
-              stateObj.personalInfo.email = email;
-            }
-          }
-
-          var targetKey = "xpvolio_state_" + email + "_" + docId;
-          localStorage.setItem(targetKey, JSON.stringify(stateObj));
-
-          var exists = userDocs.some((doc) => doc.id === docId);
-          if (!exists) {
-            userDocs.unshift({
-              id: docId,
-              title: stateObj.docTitle || "My Resume",
-              type: "CV",
-              updatedAt: new Date().toLocaleDateString(),
-              atsScore: 85,
-            });
-          }
-        }
-      }
-    }
-
-    localStorage.setItem(docListKey, JSON.stringify(userDocs));
-    sessionStorage.clear();
-  } catch (e) {
-    console.error("Migration error:", e);
   }
 };
 
