@@ -79,10 +79,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     var state = window.CVState.getState();
-
     docTitleInput.value = state.docTitle || "";
 
+    function autoFitInputWidth() {
+      var len =
+        docTitleInput.value.length || docTitleInput.placeholder.length || 10;
+      docTitleInput.style.width = Math.max(len + 2, 8) + "ch";
+    }
+
+    autoFitInputWidth();
+
     docTitleInput.addEventListener("input", function (e) {
+      autoFitInputWidth();
       window.CVState.setState("docTitle", e.target.value);
     });
   }
