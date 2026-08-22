@@ -1,12 +1,3 @@
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
 function formatDates(start, end, isCurrent) {
   if (!start && !end) return "";
   if (isCurrent) return `${escapeHtml(start) || ""} – Present`;
