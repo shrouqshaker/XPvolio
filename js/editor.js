@@ -112,14 +112,13 @@ var currentActiveSection = "personalInfo";
 
 var REGEX_RULES = {
   email: {
-    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    pattern: /^[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     message: "Please enter a valid email address (e.g. name@domain.com)",
   },
   phone: {
-    pattern:
-      /^(\+?\d{1,3}[-.\s]?)?(\(?\d{2,4}\)?[-.\s]?)?\d{3,4}[-.\s]?\d{3,4}$/,
+    pattern: /^01[0125]\d{8}$/,
     message:
-      "Please enter a valid phone number (e.g. +201012345678 or 01012345678)",
+      "Please enter a valid 11-digit Egyptian phone number (e.g., 01012345678, 011..., 012..., 015...).",
   },
   url: {
     pattern: /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/i,
@@ -190,11 +189,16 @@ function validateDateRange(containerCard) {
     endInput.classList.remove("is-valid");
     endInput.insertAdjacentHTML(
       "afterend",
-      '<div class="validation-feedback date-range-feedback text-danger small mt-1">End date cannot be earlier than start date.</div>'
+      '<div class="validation-feedback date-range-feedback text-danger small mt-1">End date cannot be earlier than start date.</div>',
     );
     return false;
   } else {
-    if (endInput.classList.contains("is-invalid") && !endInput.parentNode.querySelector(".validation-feedback:not(.date-range-feedback)")) {
+    if (
+      endInput.classList.contains("is-invalid") &&
+      !endInput.parentNode.querySelector(
+        ".validation-feedback:not(.date-range-feedback)",
+      )
+    ) {
       endInput.classList.remove("is-invalid");
     }
     return true;
