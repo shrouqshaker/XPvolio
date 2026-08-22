@@ -111,6 +111,10 @@ var ITEM_DEFAULTS = {
 var currentActiveSection = "personalInfo";
 
 var REGEX_RULES = {
+  name: {
+    pattern: /^[a-zA-Z\s]+$/i,
+    message: "Please enter a valid name (e.g. John Doe)",
+  },
   email: {
     pattern: /^[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     message: "Please enter a valid email address (e.g. name@domain.com)",
