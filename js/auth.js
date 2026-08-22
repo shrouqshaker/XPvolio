@@ -130,23 +130,38 @@ AuthManager.prototype.requireAuth = function () {
 AuthManager.prototype.updateNavbar = function () {
   var user = this.getCurrentUser();
   var navList = document.querySelector(".navbar-nav");
-
-  var ctaBtn =
-    document.getElementById("aboutCtaBtn") ||
-    document.querySelector("main a[href='editor.html']");
+  
+  var aboutCtaBtn = document.getElementById("aboutCtaBtn");
+  var heroCvBtn = document.getElementById("heroCvBtn");
+  var heroPortfolioBtn = document.getElementById("heroPortfolioBtn");
 
   if (!user) {
-    if (ctaBtn) {
-      ctaBtn.href = "editor.html";
-      ctaBtn.textContent = "Get Started Free";
+    if (aboutCtaBtn) {
+      aboutCtaBtn.href = "editor.html";
+      aboutCtaBtn.textContent = "Get Started Free";
+    }
+    if (heroCvBtn) {
+      heroCvBtn.href = "editor.html";
+      heroCvBtn.innerHTML = 'Create My CV <i class="fa-solid fa-file-lines ms-2 fs-5"></i>';
+    }
+    if (heroPortfolioBtn) {
+      heroPortfolioBtn.classList.remove("d-none");
     }
     return;
   }
 
-  if (ctaBtn) {
-    ctaBtn.href = "profile.html";
-    ctaBtn.innerHTML =
-      '<i class="fa-solid fa-table-columns me-2"></i> Go to Dashboard';
+  if (aboutCtaBtn) {
+    aboutCtaBtn.href = "profile.html";
+    aboutCtaBtn.innerHTML = '<i class="fa-solid fa-table-columns me-2"></i> Go to Dashboard';
+  }
+
+  if (heroCvBtn) {
+    heroCvBtn.href = "profile.html";
+    heroCvBtn.innerHTML = '<i class="fa-solid fa-table-columns me-2"></i> Go to Dashboard';
+  }
+
+  if (heroPortfolioBtn) {
+    heroPortfolioBtn.classList.add("d-none");
   }
 
   if (!navList) return;

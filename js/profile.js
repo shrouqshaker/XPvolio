@@ -40,7 +40,7 @@ function loadUserProfile() {
   var userAvatar = document.getElementById("userAvatar");
   var editNameInput = document.getElementById("editNameInput");
 
-  if (profileName) profileName.textContent = currentUser.name || "User";
+  if (profileName) profileName.textContent = currentUser.name;
   if (profileEmail) profileEmail.textContent = currentUser.email;
   if (editNameInput) editNameInput.value = currentUser.name || "";
 
@@ -249,7 +249,10 @@ window.filterDocs = function (type, btn) {
 
 window.promptCreateDoc = function (type) {
   var currentUser = getActiveUser();
-  if (!currentUser) return;
+  if (!currentUser) {
+    alert("Please sign in first.");
+    return;
+  }
 
   var title = prompt(`Enter a title for your new ${type}:`, "");
   if (!title || !title.trim()) return;
@@ -269,15 +272,29 @@ window.promptCreateDoc = function (type) {
   });
   saveUserDocs(currentUser.email, docs);
 
+  var defaultState = window.CVState.getDefaultState();
+
   var storageKey = `xpvolio_state_${currentUser.email.toLowerCase().trim()}_${docId}`;
-  var initialState = {
-    ...window.CVState.getDefaultState(),
+  var initialState = Object.assign({}, defaultState, {
     docId: docId,
     docTitle: trimmedTitle,
-  };
-  localStorage.setItem(storageKey, JSON.stringify(initialState));
+  });
 
-  window.location.href = `editor.html?view=${isCV ? "cv" : "portfolio"}&docId=${docId}&title=${encodeURIComponent(trimmedTitle)}`;
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(initialState));
+  } catch (err) {
+    console.error("Storage error:", err);
+  }
+
+  currentFilter = "ALL";
+  document.querySelectorAll(".filter-btn").forEach(function (btn) {
+    btn.classList.remove("active");
+    if (btn.getAttribute("data-filter") === "ALL" || btn.textContent.trim().toUpperCase() === "ALL") {
+      btn.classList.add("active");
+    }
+  });
+
+  renderUserDocuments();
 };
 
 window.previewPortfolio = function (docId) {
@@ -293,7 +310,9 @@ window.duplicateDocument = function (docId) {
   if (!currentUser) return;
 
   var docs = getUserDocs(currentUser.email);
-  var target = docs.find(function (d) { return d.id === docId; });
+  var target = docs.find(function (d) {
+    return d.id === docId;
+  });
   if (!target) return;
 
   var isCV = target.type === "CV";

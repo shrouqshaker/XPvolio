@@ -62,6 +62,7 @@
   <main id="portfolio-root"></main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/utils.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/state.js"></script>
   <script src="js/portfolio.js"></script>
@@ -72,7 +73,6 @@
         window.initPdfExport();
       }
 
-      /* Update back link to preserve active document ID & view */
       var docId = (window.CVState && typeof window.CVState.getActiveDocId === "function") 
                     ? window.CVState.getActiveDocId() 
                     : "default_doc";
