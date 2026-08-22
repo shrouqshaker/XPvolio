@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var signOutBtn = document.getElementById("signOutBtn");
   var publishBtn = document.getElementById("publishBtn");
   var docTitleInput = document.getElementById("docTitleInput");
+  var docTitleContainer = document.querySelector(".doc-title-container");
   var cvViewBtn = document.getElementById("cvViewBtn");
   var portfolioViewBtn = document.getElementById("portfolioViewBtn");
   var cvWrapper = document.getElementById("cvPreviewWrapper");
@@ -26,10 +27,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (currentUser) {
       if (userNameEl) userNameEl.textContent = currentUser.name;
       if (publishBtn) publishBtn.classList.remove("d-none");
+      if (docTitleContainer) docTitleContainer.classList.remove("d-none");
     } else {
       if (userNameEl) userNameEl.textContent = "Guest Mode";
       if (userPill) userPill.title = "Sign In to Save Account to Dashboard";
       if (publishBtn) publishBtn.classList.add("d-none");
+      if (docTitleContainer) docTitleContainer.classList.add("d-none");
       if (signOutBtn) {
         signOutBtn.title = "Sign In";
         signOutBtn.className = "btn btn-sm btn-outline-primary rounded-pill px-2 px-md-3";
@@ -40,14 +43,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function setupDocumentTitle() {
-    if (!docTitleInput || !window.CVState) return;
+    if (!currentUser || !docTitleInput || !window.CVState) return;
 
     var state = window.CVState.getState();
     docTitleInput.value = state.docTitle || "";
 
     function autoFitInputWidth() {
       var len = docTitleInput.value.length || docTitleInput.placeholder.length || 10;
-      docTitleInput.style.width = `${Math.max(len - 1, 0)}ch`;
+      docTitleInput.style.width = `${Math.max(len + 1)}ch`;
     }
 
     autoFitInputWidth();
